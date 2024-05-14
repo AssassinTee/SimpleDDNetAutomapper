@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout
 
-from globals import TILESET_COL, TILESET_ROW, NUM_TILES
+from src.globals import TILESET_COL, TILESET_ROW, NUM_TILES
 from src.widgets.widget_tile import Tile
 
 

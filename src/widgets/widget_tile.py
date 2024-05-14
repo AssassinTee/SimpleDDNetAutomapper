@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
 from PyQt5.QtCore import Qt
-from dialogs.dialog_tile_settings import TileSettingsDialog
+from src.dialogs.dialog_tile_settings import TileSettingsDialog
 from src.logic.tile_data import TileData
 from src.logic.tile_handler import TileHandler
 from src.logic.tile_connection import TileConnection

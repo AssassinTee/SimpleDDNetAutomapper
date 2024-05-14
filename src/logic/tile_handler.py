@@ -1,6 +1,6 @@
 from typing import List, Dict, TYPE_CHECKING, Set
 
-from globals import EIGHT_NEIGHBORS
+from src.globals import EIGHT_NEIGHBORS
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile
