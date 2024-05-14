@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.8]
+        python-version: [3.10, 3.11]
 
     steps:
       - name: Checkout Repository
@@ -26,17 +26,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
 
-      - name: Install Conda
-        uses: conda-incubator/setup-miniconda@v2
-
-      - name: Create Conda Environment
-        run: conda env create -f environment.yml
-
-      - name: Activate Conda Environment
-        run: conda activate my_env
-
       - name: Install PyQt5
-        run: pip install pyqt5
+        run: pip install -r requirements.txt
 
       - name: Build Executable for Linux
         if: matrix.os == 'ubuntu-latest'
