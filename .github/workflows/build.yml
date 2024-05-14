@@ -1,0 +1,58 @@
+name: Build SimpleDDNetAutomapper
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.8]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
+      - name: Install Conda
+        uses: conda-incubator/setup-miniconda@v2
+
+      - name: Create Conda Environment
+        run: conda env create -f environment.yml
+
+      - name: Activate Conda Environment
+        run: conda activate my_env
+
+      - name: Install PyQt5
+        run: pip install pyqt5
+
+      - name: Build Executable for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pyinstaller -F src/viewer.py
+          mv dist/viewer dist/viewer_linux
+
+      - name: Build Executable for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          pyinstaller -F src/viewer.py
+          mv dist/viewer.exe dist/viewer_windows.exe
+
+      - name: Upload Artifacts
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: viewer_artifacts
+          path: dist/
