@@ -1,12 +1,13 @@
-import sys
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QFileDialog, \
+    QMessageBox
 from PyQt5.QtGui import QPixmap
 
 
 class MapperGeneratorWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        
+    # noinspection PyUnresolvedReferences
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
         self.layout = QVBoxLayout()
 
         self.radio_layout = QHBoxLayout()
@@ -31,11 +32,12 @@ class MapperGeneratorWidget(QWidget):
         self.image_label.setPixmap(pixmap)
         self.image_path = image_path
         self.image_label.setScaledContents(True)
-        self.image_label.setMaximumSize(200,200)
+        self.image_label.setMaximumSize(200, 200)
 
     def open_file_dialog(self):
         options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",
+                                                   options=options)
         if file_path:
             if self.image_path:
                 # Save the image to the specified file path

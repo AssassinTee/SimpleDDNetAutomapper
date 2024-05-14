@@ -1,35 +1,40 @@
+from typing import TYPE_CHECKING, Any
+
+from PyQt5.QtCore import QPoint
+from PyQt5.QtGui import QPainter, QPolygon, QRegion
 from PyQt5.QtWidgets import QAbstractButton
-from PyQt5.QtCore import QPointF, QPoint
-from PyQt5.QtGui import QPainter, QPen, QTransform, QColor, QPolygon, QRegion
-from images_helper import drawCheckerImage
-from logic.tile_handler import TileHandler
-from typing import TYPE_CHECKING
+
+from src.images_helper import drawCheckerImage
+from src.logic.tile_handler import TileHandler
+
 if TYPE_CHECKING:
-    from widgets.widget_tile import Tile
-    
+    from src.widgets.widget_tile import Tile
+
+
 class TileConnectionButton(QAbstractButton):
     """
     dir: orientation to the next connection, 0 is up, 2 is right (clockwise)
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.state = 2  # Any
+        self._state = 2  # Any
         self._tile = None
-        self.setMinimumSize(64,64)
-        self.setMaximumSize(64,64)
-    
-    def paintEvent(self, e):
+        self.setMinimumSize(64, 64)
+        self.setMaximumSize(64, 64)
+
+    def paintEvent(self, _e: Any, _qpe: Any = None) -> None:
         qp = QPainter(self)
         size = self.size()
 
-        stateText = "EMPTY" if self.state == 0 else ("FULL" if self.state == 1 else "ANY")
+        state_text = "EMPTY" if self._state == 0 else ("FULL" if self._state == 1 else "ANY")
         drawCheckerImage(qp, size.width(), size.height())
         if not self._tile:
-            if self.state == 1 or self.state == 2:
+            if self._state == 1 or self._state == 2:
                 pm = TileHandler.instance().getPixmap(1)
-                if self.state == 2:
+                if self._state == 2:
                     polygon = QPolygon()
-                    polygon << QPoint(0, 0) << QPoint(size.width(),size.height()) << QPoint(0,size.height())
+                    polygon << QPoint(0, 0) << QPoint(size.width(), size.height()) << QPoint(0, size.height())
                     reg = QRegion(polygon)
                     qp.setClipRegion(reg)
                 qp.drawPixmap(0, 0, size.width(), size.height(), pm)
@@ -37,24 +42,21 @@ class TileConnectionButton(QAbstractButton):
         else:
             pm = self._tile.pixmap()
             qp.drawPixmap(0, 0, size.width(), size.height(), pm)
-            
-        qp.drawText(1, size.height()//2, stateText)
+
+        qp.drawText(1, size.height() // 2, state_text)
         qp.end()
-        
-        
-    
+
     def checkStateSet(self):
-        return self.state
-    
+        return self._state
+
     def nextCheckState(self):
-        self.setState(self.state + 1)
-        
+        self.setState(self._state + 1)
+
     def setTile(self, tile: "Tile"):
         self._tile = tile
         self.update()
-        
+
     def setState(self, state):
-        self.state = state
-        self.state %=3  # Tri state button
+        self._state = state
+        self._state %= 3  # Tri state button
         self.update()
-    

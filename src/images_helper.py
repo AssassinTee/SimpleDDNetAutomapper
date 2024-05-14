@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QImage, QPainter
 
-CHECKER_IMAGE = QImage("img/checker.png").scaled(16,16)
+CHECKER_IMAGE = QImage("img/checker.png").scaled(16, 16)
+
 
 def drawCheckerImage(qp: QPainter, width: int, height: int):
     for y in range(height, CHECKER_IMAGE.height()):
