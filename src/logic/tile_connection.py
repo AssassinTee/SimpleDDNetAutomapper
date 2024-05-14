@@ -76,7 +76,7 @@ class TileConnection():
 
     def _relationToString(self, i: int):
         val = self._neighbors[i]
-        return "# A " if val == 0 else ("# E " if val == 1 else "# F ")
+        return "# E " if val == 0 else ("# F " if val == 1 else "# A ")
         
     def __str__(self):
         _str = ""

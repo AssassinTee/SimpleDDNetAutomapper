@@ -15,11 +15,14 @@ class TileSettingsDialog(QDialog):
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(0)
         self.layout.setVerticalSpacing(0)
+        self.buttons = []
         for i in range(9):
             widget = TileConnectionButton(self)
             self.layout.addWidget(widget, i//3, i%3, 1, 1, Qt.AlignVCenter)
             if i == 4:
                 self.center = widget
+            else:
+                self.buttons.append(widget)
         self.center.setTile(tile)
         self.tile = tile
 
@@ -40,5 +43,9 @@ class TileSettingsDialog(QDialog):
     
     def setTileData(self, data: TileData):
         self.tile_data = data
+        
+        # update button states
+        for i, button_state in enumerate(self.tile_data.con._neighbors):
+            self.buttons[i].setState(button_state)
         
         

@@ -47,11 +47,14 @@ class TileConnectionButton(QAbstractButton):
         return self.state
     
     def nextCheckState(self):
-        self.state +=1
-        self.state %=3  # Tri state button
-        self.update()
+        self.setState(self.state + 1)
         
     def setTile(self, tile: "Tile"):
         self._tile = tile
+        self.update()
+        
+    def setState(self, state):
+        self.state = state
+        self.state %=3  # Tri state button
         self.update()
     
