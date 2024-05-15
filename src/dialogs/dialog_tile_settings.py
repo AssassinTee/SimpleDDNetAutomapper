@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QGridLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
 from src.buttons.button_tile_connection import TileConnectionButton
+from src.buttons.button_tile_connection_center import TileConnectionCenterButton
 from src.logic.tile_data import TileData
 from src.logic.tile_connection import TileConnection
 from typing import TYPE_CHECKING
@@ -17,15 +18,25 @@ class TileSettingsDialog(QDialog):
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(0)
         self.layout.setVerticalSpacing(0)
+
+        # add before and after buttons for central alignment
+        for stretch_index in [0, 5]:
+            self.layout.setRowStretch(stretch_index, 1)
+            self.layout.setColumnStretch(stretch_index, 1)
+
+        # add 3x3 buttons
         self.buttons = []
         for i in range(9):
-            widget = TileConnectionButton(self)
-            self.layout.addWidget(widget, i // 3, i % 3, 1, 1, Qt.AlignVCenter)
             if i == 4:
+                widget = TileConnectionCenterButton(tile, self)
                 self.center = widget
             else:
+                widget = TileConnectionButton(self)
                 self.buttons.append(widget)
-        self.center.setTile(tile)
+            self.layout.addWidget(widget, i // 3 + 1, i % 3 + 1, 1, 1)
+
+        #self.center.setTile(tile)
+        #self.center.setMain()
         self.tile = tile
 
         q_btn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
@@ -33,7 +44,7 @@ class TileSettingsDialog(QDialog):
         self.buttonBox = QDialogButtonBox(q_btn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        self.layout.addWidget(self.buttonBox, 4, 3)
+        self.layout.addWidget(self.buttonBox, 6, 0, 1, 6, Qt.AlignHCenter)
         self.setLayout(self.layout)
 
         self.setModal(True)
