@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QScrollArea
 
 from src.dockwidgets.dockwidget_mapper_generator import MapperGeneratorDockwidget
 from src.widgets.widget_image_selector import ImageSelectorWidget
@@ -13,8 +13,9 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("Simple DDNet Automapper")
         self.resize(800, 600)  # Set initial size if needed
-        self.setMaximumSize(1920, 1080)  # Set maximum size
-        self.central_widget = ImageSelectorWidget()
+        self.central_widget = ImageSelectorWidget(self)
+        #scroll_area = QScrollArea(self)
+        #scroll_area.setWidget(self.central_widget)
         self.setCentralWidget(self.central_widget)
 
         # Main layout
