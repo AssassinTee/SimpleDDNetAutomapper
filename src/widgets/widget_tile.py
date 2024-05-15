@@ -15,6 +15,7 @@ class Tile(QLabel):
         self.tile_id: int = tile_id
         self.width = width
         self.height = height
+        self.setMaximumSize(width, height)
 
         self.mousePressEvent = self.openDialog
         self.hovered = False
@@ -61,7 +62,9 @@ class Tile(QLabel):
                     qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignVCenter, "?")
 
         # draw outline
-        qp.setPen(QPen(QColor(0, 0, 0, 255), 1))
+        pen = QPen(QColor(0, 0, 0, 127), 1)
+        pen.setStyle(Qt.DotLine)
+        qp.setPen(pen)
         qp.drawRect(0, 0, self.width - 1, self.height - 1)
 
     def openDialog(self, _):
