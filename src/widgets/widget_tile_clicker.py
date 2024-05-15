@@ -10,6 +10,8 @@ class TileClicker(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.gridLayout = QGridLayout()
+        self.gridLayout.setHorizontalSpacing(0)
+        self.gridLayout.setVerticalSpacing(0)
         self.setLayout(self.gridLayout)
         self.tiles = []
 
@@ -26,7 +28,7 @@ class TileClicker(QWidget):
             col = i % TILESET_COL
             tile_widget = Tile(i, width=tile_width, height=tile_height)
             self.tiles.append(tile_widget)
-            self.gridLayout.addWidget(tile_widget, row, col)
+            self.gridLayout.addWidget(tile_widget, row + 1, col + 1)
 
         for i in range(NUM_TILES):
             tile = self.tiles[i]
@@ -35,5 +37,8 @@ class TileClicker(QWidget):
             x = int((i % TILESET_COL) * tile_width_float)
             y = int((i // TILESET_ROW) * tile_height_float)
             tile.setPixmap(pixmap.copy(x, y, tile_width, tile_height))
-            tile.setScaledContents(False)
-            tile.setMaximumSize(128, 128)
+
+        self.gridLayout.setRowStretch(0, 1)
+        self.gridLayout.setColumnStretch(0, 1)
+        self.gridLayout.setRowStretch(TILESET_ROW + 1, 1)
+        self.gridLayout.setColumnStretch(TILESET_COL + 1, 1)
