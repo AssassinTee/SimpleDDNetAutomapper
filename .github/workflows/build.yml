@@ -46,5 +46,5 @@ jobs:
         if: matrix.python-version == '3.11'
         uses: actions/upload-artifact@v4
         with:
-          name: simple_ddnet_automapper_${{ matrix.os }}${{ matrix.architecture }}_${{ matrix.python-version }}
+          name: simple_ddnet_automapper_${{ matrix.os }}${{ matrix.architecture }}
           path: dist/
