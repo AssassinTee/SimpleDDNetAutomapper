@@ -36,3 +36,9 @@ class TileData:
     def __copy__(self):
         td = self.con.__copy__()
         return TileData(td, self.h_flip, self.v_flip, self.rot, self.empty)
+
+    def __eq__(self, other):
+        if isinstance(other, TileData):
+            return self.con == other.con and self.h_flip == other.h_flip and self.v_flip == other.v_flip \
+                and self.rot == other.rot and self.empty == other.empty
+        raise NotImplemented
