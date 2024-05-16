@@ -2,9 +2,9 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
 from PyQt5.QtCore import Qt
 from src.dialogs.dialog_tile_settings import TileSettingsDialog
+from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
 from src.logic.tile_handler import TileHandler
-from src.logic.tile_connection import TileConnection
 from src.images_helper import drawCheckerImage
 from typing import Optional, Any
 
@@ -86,13 +86,13 @@ class Tile(QLabel):
         if ret == 1:
             # update tile data in handler
             self.tile_data = self.dialog.getTileData()
+            print(self.tile_data.con)
             self.data_checked = True
             TileHandler.instance().updateTileRelations(self)
 
         # mark tile as deselected after dialog
         self.selected = False
         self.update()
-        print(ret)
 
     def enterEvent(self, event):
         self.hovered = True
@@ -137,4 +137,5 @@ class Tile(QLabel):
 
         # todo autodetect symmetry for flip and rot
         self.tile_data = TileData(TileConnection(has_alpha_neighbors), False, False, False, empty)
-        TileHandler.instance().updateTileRelations(self)
+        # don't save them in the handler, only solve valid tiles there
+        # TileHandler.instance().updateTileRelations(self)
