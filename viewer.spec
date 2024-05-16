@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['src\\viewer.py'],
+    ['viewer.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='viewer',
+    name='simple_ddnet_automapper',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
