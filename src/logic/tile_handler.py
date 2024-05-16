@@ -1,6 +1,8 @@
 from typing import List, Dict, TYPE_CHECKING, Set
 
 from src.globals import EIGHT_NEIGHBORS
+from src.logic.tile_connection import TileConnection
+from src.logic.tile_data import TileData
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile
@@ -22,7 +24,7 @@ class TileHandler:
         self.relation_storage: Dict[int, List[int]] = {}
         for i in range(storage_size):
             self.relation_storage[i] = []
-        self.reverse_relation_storage: Dict[int, List[int]] = {}
+        self.tile_data_storage: Dict[int, TileData] = {}
         self.id_map: Dict[int, "Tile"] = {}
 
     def addTileRelations(self, tile: "Tile"):
@@ -33,11 +35,8 @@ class TileHandler:
             if tile.getID() not in self.relation_storage[neighbor_enc]:
                 self.relation_storage[neighbor_enc].append(tile.getID())
 
-            # add relation to reverse storage
-            if tile.getID() not in self.reverse_relation_storage:
-                self.reverse_relation_storage[tile.getID()] = []
-            if neighbor_enc not in self.reverse_relation_storage[tile.getID()]:
-                self.reverse_relation_storage[tile.getID()].append(neighbor_enc)
+        # add relation to reverse storage
+        self.tile_data_storage[tile.getID()] = tile.tile_data
 
     """
     removes tile relations
@@ -45,15 +44,16 @@ class TileHandler:
 
     def removeTileRelations(self, tile_id: int):
         # tile not in or already removed
-        if tile_id not in self.reverse_relation_storage:
+        if tile_id not in self.tile_data_storage:
             return
 
         # remove from encodings
-        for neighbor_enc in self.reverse_relation_storage[tile_id]:
+        permutations: Set[int] = self.tile_data_storage[tile_id].getPermutations()
+        for neighbor_enc in permutations:
             self.relation_storage[neighbor_enc].remove(tile_id)
 
         # remove from reverse map
-        del self.reverse_relation_storage[tile_id]
+        del self.tile_data_storage[tile_id]
 
     def updateTileRelations(self, tile: "Tile"):
         self.removeTileRelations(tile.getID())
@@ -73,3 +73,19 @@ class TileHandler:
         if tile_id not in self.id_map:
             return ValueError(f"ID {tile_id} not known")
         return self.id_map[tile_id].pixmap()
+    
+    def findTiles(self, tile_connection: TileConnection) -> List[int]:
+        tile_connections: List[TileConnection] = tile_connection.getPermutations()
+        ret = []
+        for con in tile_connections:
+            con_enc = con.encodeSmall()
+            assert con_enc in self.relation_storage
+            ret.extend(self.relation_storage[con_enc])
+        return ret
+    
+    def getTile(self, tile_id: int) -> "Tile":
+        if tile_id not in self.id_map:
+            raise ValueError(f"Unknown tile ID {tile_id}")
+        return self.id_map[tile_id]
+            
+        
