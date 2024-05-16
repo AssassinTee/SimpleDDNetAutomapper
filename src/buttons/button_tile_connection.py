@@ -61,7 +61,6 @@ class TileConnectionButton(QAbstractButton):
         state_text = "EMPTY" if self._state == 0 else ("FULL" if self._state == 1 else "ANY")
         qp.setPen(QPen(QColor(0, 0, 0, 255), 1))
         qp.drawText(1, size.height() // 2, state_text)
-        qp.end()
 
     def _findPixmap(self) -> Optional[QPixmap]:
         if self._tile:
