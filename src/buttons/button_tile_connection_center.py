@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QGridLayout, QCheckBox
 
-from buttons.button_tile_connection import TileConnectionButton
+from src.buttons.button_tile_connection import TileConnectionButton
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile
