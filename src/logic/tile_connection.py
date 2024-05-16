@@ -26,6 +26,7 @@ class TileConnection:
         encoded_val = 0
         for i in range(EIGHT_NEIGHBORS):
             encoded_val = (encoded_val << bits)  # move 2 bits
+            assert self._neighbors[i] < 2 ** bits
             encoded_val += self._neighbors[i]  # add 2 bits
         return encoded_val
 
@@ -54,7 +55,7 @@ class TileConnection:
         neighbors = [0] * EIGHT_NEIGHBORS
 
         # index of rotating neighbors
-        to_swap = [3, 0, 1, 5, 2, 6, 7, 4]
+        to_swap = [3, 0, 1, 5, 2, 6, 7, 4]  # TODO use enum
 
         for i in range(EIGHT_NEIGHBORS):
             neighbors[i] = self._neighbors[to_swap[i]]
@@ -65,14 +66,14 @@ class TileConnection:
 
     def vFlip(self) -> "TileConnection":
         neighbors = [0] * EIGHT_NEIGHBORS
-        to_swap = [2, 1, 0, 4, 3, 7, 6, 5]
+        to_swap = [2, 1, 0, 4, 3, 7, 6, 5]  # TODO use enum
         for i in range(EIGHT_NEIGHBORS):
             neighbors[i] = self._neighbors[to_swap[i]]
         return TileConnection(neighbors)
 
     def hFlip(self) -> "TileConnection":
         neighbors = [0] * EIGHT_NEIGHBORS
-        to_swap = [5, 6, 7, 3, 4, 0, 1, 2]
+        to_swap = [5, 6, 7, 3, 4, 0, 1, 2]  # TODO use enum
         for i in range(EIGHT_NEIGHBORS):
             neighbors[i] = self._neighbors[to_swap[i]]
         return TileConnection(neighbors)
@@ -104,6 +105,21 @@ class TileConnection:
 
     def getNeighbors(self):
         return self._neighbors
+
+    """
+    Returns a TileConnection where every ANY connection is FULL
+    """
+
+    def getFull(self) -> "TileConnection":
+        neighbors = self._neighbors.copy()
+        return TileConnection([min(n, 1) for n in neighbors])
+
+    def setNeighbor(self, neighbor_id, state):
+        if state < 0 or state > 2:
+            return ValueError(f"Invalid state {state}")
+        if neighbor_id < 0 or neighbor_id > EIGHT_NEIGHBORS:
+            return ValueError(f"Invalid neighbor ID {neighbor_id}")
+        self._neighbors[neighbor_id] = state
 
 
 def decode(encoded_val: int):
