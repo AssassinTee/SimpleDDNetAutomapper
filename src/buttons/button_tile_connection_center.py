@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class TileConnectionCenterButton(TileConnectionButton):
-    def __init__(self, tile: "Tile", parent=None):
-        super().__init__(parent)
+    def __init__(self, tile: "Tile", button_id, parent=None):
+        super().__init__(button_id, parent)
         self._tile = tile
         self._main = True
         self._state = 1  # full, default state
@@ -45,7 +45,7 @@ class TileConnectionCenterButton(TileConnectionButton):
     def _paintText(self, qp: QPainter):
         pass
 
-    def setTile(self, tile: "Tile"):
+    def setTile(self, tile: Optional["Tile"], update_neighbors=True):
         # TODO set checkboxes
         self._tile = tile
         self.update()
