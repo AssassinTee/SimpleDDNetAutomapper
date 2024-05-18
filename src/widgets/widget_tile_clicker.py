@@ -30,7 +30,8 @@ class TileClicker(QWidget):
             self.tiles.append(tile_widget)
             self.gridLayout.addWidget(tile_widget, row + 1, col + 1)
 
-        for i in range(NUM_TILES):
+        # handle all tiles except 0, handle tile 0 separately
+        for i in range(1, NUM_TILES):
             tile = self.tiles[i]
 
             # yes, there might be gaps due to bad tilesets

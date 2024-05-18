@@ -25,7 +25,7 @@ class ImageSelectorWidget(QWidget):
         self.setLayout(layout)
 
     def select_image(self):
-        file_dialog = QFileDialog()
+        file_dialog = QFileDialog(self)
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp)")
         file_dialog.setViewMode(QFileDialog.List)
         file_dialog.setFileMode(QFileDialog.ExistingFile)

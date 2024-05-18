@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLa
     QMessageBox
 from PyQt5.QtGui import QPixmap
 
+from src.dialogs.dialog_check_map import CheckMapDialog
+
 
 class MapperGeneratorWidget(QWidget):
     # noinspection PyUnresolvedReferences
@@ -24,7 +26,7 @@ class MapperGeneratorWidget(QWidget):
         self.layout.addWidget(self.generate_button)
 
         self.setLayout(self.layout)
-        self.image_path = "/home/marvin/funspace/SimpleDDNetAutomapper/data/img/grass_main.png"
+        self.image_path = "data/img/grass_main.png"
         self.set_image(self.image_path)
 
     def set_image(self, image_path):
@@ -35,6 +37,9 @@ class MapperGeneratorWidget(QWidget):
         self.image_label.setMaximumSize(200, 200)
 
     def open_file_dialog(self):
+        cmd = CheckMapDialog(self)
+        cmd.exec_()
+        """
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",
                                                    options=options)
@@ -44,3 +49,4 @@ class MapperGeneratorWidget(QWidget):
                 QMessageBox.information(self, "Success", "Image and file saved successfully!")
             else:
                 QMessageBox.warning(self, "Warning", "Please select an image first.")
+        """

@@ -4,7 +4,7 @@ from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPainter, QPolygon, QRegion, QPixmap, QColor, QPen
 from PyQt5.QtWidgets import QAbstractButton
 
-from src.images_helper import drawCheckerImage
+from src.images_helper import ImageHelper
 from src.logic.tile_handler import TileHandler
 from src.signals.signal_emitter import NeighborClickedEmitter
 
@@ -19,7 +19,7 @@ class TileConnectionButton(QAbstractButton):
 
     def __init__(self, button_id, parent=None):
         super().__init__(parent)
-        self.signal_emitter = NeighborClickedEmitter()
+        self.signal_emitter = NeighborClickedEmitter(parent)
         self.button_id = button_id
         self._state = 2  # Any
         self._num_states = 3
@@ -33,7 +33,7 @@ class TileConnectionButton(QAbstractButton):
 
         # draw background
         if self._state != 2:
-            drawCheckerImage(qp, self.size().width(), self.size().height())
+            ImageHelper.instance().drawCheckerImage(qp, self.size().width(), self.size().height())
 
         self._paintTile(qp)
         self._paintOutline(qp)
