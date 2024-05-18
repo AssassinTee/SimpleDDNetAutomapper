@@ -97,7 +97,7 @@ class TileConnection:
             for i in range(EIGHT_NEIGHBORS):
                 if self._neighbors[i] != other._neighbors[i]:
                     return False
-                return True
+            return True
         return NotImplemented
 
     def __copy__(self):
@@ -113,6 +113,10 @@ class TileConnection:
     def getFull(self) -> "TileConnection":
         neighbors = self._neighbors.copy()
         return TileConnection([min(n, 1) for n in neighbors])
+
+    def getEmpty(self) -> "TileConnection":
+        neighbors = self._neighbors.copy()
+        return TileConnection([n % 2 for n in neighbors])
 
     def setNeighbor(self, neighbor_id, state):
         if state < 0 or state > 2:
