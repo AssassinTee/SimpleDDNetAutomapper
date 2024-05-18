@@ -1,15 +1,15 @@
-from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
 from PyQt5.QtCore import Qt
 from src.dialogs.dialog_tile_settings import TileSettingsDialog
 from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
 from src.logic.tile_handler import TileHandler
-from src.images_helper import drawCheckerImage
 from typing import Optional, Any
 
+from widgets.widget_base_tile import BaseTile
 
-class Tile(QLabel):
+
+class Tile(BaseTile):
     def __init__(self, tile_id: int, width=64, height=64) -> None:
         super().__init__()
         self.tile_id: int = tile_id
@@ -35,11 +35,11 @@ class Tile(QLabel):
     def paintEvent(self,
                    e: Any,
                    _: Any = None) -> None:
-        qp = QPainter(self)
-        drawCheckerImage(qp, self.width, self.height)
-        qp.end()
+        # draw BaseTile
         super().paintEvent(e)
-        if self.pixmap():
+
+        # draw text
+        if self.pixmap() or self.tile_id == 0:
             qp = QPainter(self)
             self.paintPixmapExists(qp)
             qp.end()
