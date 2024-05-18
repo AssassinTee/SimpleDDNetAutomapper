@@ -20,7 +20,7 @@ class TileSettingsDialog(QDialog):
     # noinspection PyUnresolvedReferences
     def __init__(self, tile: "Tile", parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"Configure Tile")
+        self.setWindowTitle("Configure Tile")
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(0)
         self.layout.setVerticalSpacing(0)
@@ -114,7 +114,7 @@ class TileSettingsDialog(QDialog):
     @cache
     def _getNeighborButtons(button_id) -> List[Optional[int]]:
         """
-        returns the 8 neighborhood of a button with button_id. 
+        returns the 8 neighborhood of a button with button_id.
         If there is no neigbor in the 8-neighbood, None is put in so the location is still known
         
         Examples:

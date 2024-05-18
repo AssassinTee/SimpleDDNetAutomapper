@@ -45,7 +45,7 @@ class TileConnectionButton(QAbstractButton):
             return
         size = self.size()
         # clip region for ANY in order to show state between empty and full
-        #if not self._main and self._state == 2:
+        # if not self._main and self._state == 2:
         #    polygon = QPolygon()
         #    polygon << QPoint(0, 0) << QPoint(size.width(), size.height()) << QPoint(0, size.height())
         #    reg = QRegion(polygon)
@@ -55,7 +55,7 @@ class TileConnectionButton(QAbstractButton):
         pm = self._findPixmap()
         if pm:
             qp.drawPixmap(0, 0, size.width(), size.height(), pm)
-        #qp.setClipping(False)
+        # qp.setClipping(False)
 
     # will be overwritten
     def _paintOutline(self, qp: QPainter):

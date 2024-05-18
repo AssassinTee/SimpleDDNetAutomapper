@@ -14,8 +14,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Simple DDNet Automapper")
         self.resize(800, 600)  # Set initial size if needed
         self.central_widget = ImageSelectorWidget(self)
-        #scroll_area = QScrollArea(self)
-        #scroll_area.setWidget(self.central_widget)
+        # scroll_area = QScrollArea(self)
+        # scroll_area.setWidget(self.central_widget)
         self.setCentralWidget(self.central_widget)
 
         # Main layout

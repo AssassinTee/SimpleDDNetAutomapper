@@ -1,5 +1,4 @@
 import random
-from functools import cache
 from typing import TYPE_CHECKING, List, Optional, Any
 
 import numpy as np
@@ -19,7 +18,7 @@ class CheckMapDialog(QDialog):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent)
 
-        self.setWindowTitle(f"Check tile configurations")
+        self.setWindowTitle("Check tile configurations")
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(0)
         self.layout.setVerticalSpacing(0)
@@ -91,7 +90,7 @@ class CheckMapDialog(QDialog):
         tc = TileConnection(neighbors)
         tile_id_list = TileHandler.instance().findTiles(tc)
         if len(tile_id_list):
-            rand_tile_id = random.randint(0, len(tile_id_list)-1)  # I could make more sure that every tile is used
+            rand_tile_id = random.randint(0, len(tile_id_list) - 1)  # I could make more sure that every tile is used
             return TileHandler.instance().getPixmap(tile_id_list[rand_tile_id])
         else:
             return ImageHelper.instance().NO_TILE_FOUND

@@ -1,0 +1,14 @@
+[flake8]
+exclude =
+    # Exclude all files in these directories
+    dist/
+    build/
+    .git/
+    __pycache__/
+    # Exclude specific files
+    tools/
+
+max-line-length = 120
+
+# ignore unused imports, blank lines that contain whitespaces
+ignore = F401, W293
