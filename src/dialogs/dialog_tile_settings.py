@@ -98,7 +98,7 @@ class TileSettingsDialog(QDialog):
                 neighbors[i] = self._tile_data.con.getNeighbors()[neighbor_buttons[i]]
         con = TileConnection(neighbors)
 
-        tile_connection = con.getFull()
+        tile_connection = con.getEmpty()
         tile_id_list = TileHandler.instance().findTiles(tile_connection)
         if len(tile_id_list):
             # yay, I found a tile that connects in this location
