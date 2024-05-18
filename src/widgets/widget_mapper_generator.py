@@ -24,7 +24,7 @@ class MapperGeneratorWidget(QWidget):
         self.layout.addWidget(self.generate_button)
 
         self.setLayout(self.layout)
-        self.image_path = "/home/marvin/funspace/SimpleDDNetAutomapper/tests/img/grass_main.png"
+        self.image_path = "/home/marvin/funspace/SimpleDDNetAutomapper/data/img/grass_main.png"
         self.set_image(self.image_path)
 
     def set_image(self, image_path):

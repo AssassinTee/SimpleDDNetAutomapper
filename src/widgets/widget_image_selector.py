@@ -36,7 +36,7 @@ class ImageSelectorWidget(QWidget):
             print("ERROR")
 
             # debug code
-            selected_files = ["img/grass_main.png"]
+            selected_files = ["data/img/grass_main.png"]
 
         if selected_files:
             image_path = selected_files[0]
