@@ -7,9 +7,9 @@ class TileConnection:
         if len(neighbors) != EIGHT_NEIGHBORS:
             raise ValueError(f"Neighbors are not {EIGHT_NEIGHBORS}")
         for i in range(EIGHT_NEIGHBORS):
-            if neighbors[i] < 0 or neighbors[i] >= NUM_NEIGHBOR_STATES:
-                raise ValueError(f"neighbor[{i}] not in range [0 2]")
-        self._neighbors = neighbors
+            if neighbors[i] < 0 or neighbors[i] >= 3:
+                raise ValueError(f"neighbor[{i}] not in [0, 1]")
+        self._neighbors = neighbors.copy()
 
     def encode(self) -> int:
         return self._encode(NUM_NEIGHBOR_BITS)
@@ -101,7 +101,7 @@ class TileConnection:
         return NotImplemented
 
     def __copy__(self):
-        return TileConnection(self._neighbors.copy())
+        return TileConnection(self._neighbors)
 
     def getNeighbors(self):
         return self._neighbors
@@ -111,11 +111,11 @@ class TileConnection:
     """
 
     def getFull(self) -> "TileConnection":
-        neighbors = self._neighbors.copy()
+        neighbors = self._neighbors
         return TileConnection([min(n, 1) for n in neighbors])
 
     def getEmpty(self) -> "TileConnection":
-        neighbors = self._neighbors.copy()
+        neighbors = self._neighbors
         return TileConnection([n % 2 for n in neighbors])
 
     def setNeighbor(self, neighbor_id, state):
@@ -126,6 +126,7 @@ class TileConnection:
         self._neighbors[neighbor_id] = state
 
 
+"""
 def decode(encoded_val: int):
     neighbors = []
     for _ in range(EIGHT_NEIGHBORS):
@@ -135,6 +136,7 @@ def decode(encoded_val: int):
         raise ValueError(f"Could not decode {encoded_val}, because it contains too much information")
     neighbors.reverse()
     return TileConnection(neighbors)
+"""
 
 
 def encodeListSmall(tile_connection_list: List[TileConnection]) -> Set[int]:
