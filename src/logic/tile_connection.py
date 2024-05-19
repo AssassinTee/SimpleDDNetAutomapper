@@ -34,7 +34,7 @@ class TileConnection:
     Returns a list of TileConnections possible with the any connection
     """
 
-    def getPermutations(self) -> List["TileConnection"]:
+    def getPossibleNeighborhoods(self) -> List["TileConnection"]:
         i = 0
         while i < EIGHT_NEIGHBORS and self._neighbors[i] != 2:
             i += 1
@@ -44,13 +44,12 @@ class TileConnection:
         neighbors = self._neighbors.copy()
         for j in [0, 1]:
             neighbors[i] = j
-            ret.extend(TileConnection(neighbors).getPermutations())
+            ret.extend(TileConnection(neighbors).getPossibleNeighborhoods())
         return ret
 
     """
     rotates 45 degree
     """
-
     def rotate45(self) -> "TileConnection":
         neighbors = [0] * EIGHT_NEIGHBORS
 

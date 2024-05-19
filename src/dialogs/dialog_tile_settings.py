@@ -11,13 +11,15 @@ from src.globals import EIGHT_NEIGHBORS
 from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
 from src.logic.tile_handler import TileHandler
+from src.logic.tile_status import TileStatus
+from src.logic.tile_modificators import TileMods
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile
 
 
 class TileSettingsDialog(QDialog):
-    # noinspection PyUnresolvedReferences
+
     def __init__(self, tile: "Tile", parent=None):
         super().__init__(parent)
         self.setWindowTitle("Configure Tile")
@@ -36,10 +38,11 @@ class TileSettingsDialog(QDialog):
             if i == 4:
                 widget = TileConnectionCenterButton(tile, i, self)
                 self.center = widget
+                widget.signal_emitter.modification_signal.connect(self.onModificationChange)
             else:
                 widget = TileConnectionButton(len(self.buttons), self)
                 self.buttons.append(widget)
-            widget.signal_emitter.neighbor_signal.connect(self.onConnectionButtonClick)
+                widget.signal_emitter.neighbor_signal.connect(self.onConnectionButtonClick)
             self.layout.addWidget(widget, i // 3 + 1, i % 3 + 1, 1, 1)
 
         # self.center.setTile(tile)
@@ -56,14 +59,13 @@ class TileSettingsDialog(QDialog):
 
         self.setModal(True)
         # TODO calculate smarter values with the tile itself
-        self._tile_data = TileData(TileConnection([2] * 8), False, False, False, False)
+        self._tile_data = TileData(TileConnection([2] * 8), TileStatus(), TileMods(False, False, False))
 
     def getTileData(self):
-        return self._tile_data
+        return self._tile_data.__copy__()
 
     def setTileData(self, data: TileData):
-        self._tile_data = data
-        print(f"Dialog tile data:\n{self._tile_data.con}")
+        self._tile_data = data.__copy__()
 
         # update button states
         for i, button_state in enumerate(self._tile_data.con.getNeighbors()):
@@ -76,7 +78,6 @@ class TileSettingsDialog(QDialog):
     def onConnectionButtonClick(self, button_id: int):
         # goal: update tile after a button was clicked
         # find TileConnections, then ask handler if any tiles exist
-        print(f"button ID {button_id} clicked")
         self._updateTileData(button_id)  # update tile data
         self._updateTile(button_id)  # update own tile
 
@@ -85,6 +86,22 @@ class TileSettingsDialog(QDialog):
         for i in range(EIGHT_NEIGHBORS):
             if neighbor_buttons[i] is not None:
                 self._updateTile(i)
+
+    def onModificationChange(self, modification: int, value: bool):
+        match modification:
+            case 0:
+                self._tile_data.mods.can_v_flip = value
+                return
+            case 1:
+                self._tile_data.mods.can_h_flip = value
+                return
+            case 2:
+                self._tile_data.mods.can_rot = value
+                return
+            case 3:
+                self._tile_data.status.empty = value
+                return
+        raise ValueError(f"Modification {modification} unknown")
 
     def _updateTileData(self, button_id: int):
         state = self.buttons[button_id].checkStateSet()
@@ -104,7 +121,7 @@ class TileSettingsDialog(QDialog):
             # yay, I found a tile that connects in this location
             # use a random one, because this shouldn't matter
             rand_tile = random.randint(0, len(tile_id_list) - 1)
-            tile_id = tile_id_list[rand_tile]
+            tile_id, _ = tile_id_list[rand_tile]
             tile = TileHandler.instance().getTile(tile_id)
             self.buttons[button_id].setTile(tile, False)
         else:  # No tile? reset
@@ -141,7 +158,6 @@ class TileSettingsDialog(QDialog):
             raise ValueError(f"{num} not found")
 
         button_x, button_y = _find_index(button_id)
-        print(button_x, button_y)
         ret = []
         for y in [-1, 0, 1]:
             for x in [-1, 0, 1]:

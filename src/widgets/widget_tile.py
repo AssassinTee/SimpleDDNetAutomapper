@@ -1,5 +1,8 @@
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
 from PyQt5.QtCore import Qt
+
+from logic.tile_modificators import TileMods
+from src.logic.tile_status import TileStatus
 from src.dialogs.dialog_tile_settings import TileSettingsDialog
 from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
@@ -11,8 +14,7 @@ from widgets.widget_base_tile import BaseTile
 
 class Tile(BaseTile):
     def __init__(self, tile_id: int, width=64, height=64) -> None:
-        super().__init__()
-        self.tile_id: int = tile_id
+        super().__init__(tile_id)
         self.width = width
         self.height = height
         self.setMaximumSize(width, height)
@@ -21,16 +23,11 @@ class Tile(BaseTile):
         self.hovered = False
         self.selected = False
         self.dialog = TileSettingsDialog(self)
-        self.tile_data: Optional[TileData] = None
         self.alpha = None
         self.setMouseTracking(True)
         self.lock = True  # lock as long as empty
         self.data_checked = False  # true after checked
         self.image: Optional[QImage] = None
-        TileHandler.instance().addTile(self)
-
-    def getID(self) -> int:
-        return self.tile_id
 
     def paintEvent(self,
                    e: Any,
@@ -80,7 +77,7 @@ class Tile(BaseTile):
         # update tile data in dialog
         # use a copy, because if you press cancel, this should still store the original values
         if self.tile_data:
-            self.dialog.setTileData(self.tile_data.__copy__())
+            self.dialog.setTileData(self.tile_data)
         ret = self.dialog.exec()
         # ok pressed
         if ret == 1:
@@ -88,7 +85,7 @@ class Tile(BaseTile):
             self.tile_data = self.dialog.getTileData()
             print(self.tile_data.con)
             self.data_checked = True
-            TileHandler.instance().updateTileRelations(self)
+            TileHandler.instance().updateTileStorage(self)
 
         # mark tile as deselected after dialog
         self.selected = False
@@ -104,6 +101,7 @@ class Tile(BaseTile):
 
     def setPixmap(self, pixmap: QPixmap):
         super().setPixmap(pixmap)
+        TileHandler.instance().addPixmap(self)
         self.image = pixmap.toImage().convertToFormat(QImage.Format_ARGB32)
         self.scanImage()
 
@@ -136,6 +134,10 @@ class Tile(BaseTile):
                     has_alpha_neighbors.append(int(alpha > 0))
 
         # todo autodetect symmetry for flip and rot
-        self.tile_data = TileData(TileConnection(has_alpha_neighbors), False, False, False, empty)
+        ts = TileStatus()
+        ts.empty = empty
+        tc = TileConnection(has_alpha_neighbors)
+        tm = TileMods(False, False, False)
+        self.tile_data = TileData(tc, ts, tm)
         # don't save them in the handler, only solve valid tiles there
         # TileHandler.instance().updateTileRelations(self)

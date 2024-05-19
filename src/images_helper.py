@@ -17,6 +17,7 @@ class ImageHelper:
     def _init(self):
         self.CHECKER_IMAGE = QImage("data/img/checker.png").scaled(16, 16)
         self.NO_TILE_FOUND = QPixmap("data/img/tile_not_found.png")
+        self.NO_TILE_FOUND_EMPTY = QPixmap("data/img/tile_not_found_empty.png")
 
     def drawCheckerImage(self, qp: QPainter, width: int, height: int):
         for y in range(0, height, self.CHECKER_IMAGE.height()):

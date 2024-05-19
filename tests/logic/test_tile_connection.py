@@ -146,6 +146,21 @@ class TestTileConnection:
         assert t2 == t
         assert t2.rotate45().rotate45() == t.rotate90()
 
+    @pytest.mark.parametrize("rotated, neighbors", [
+        [0b00100000, [1, 0, 0, 0, 0, 0, 0, 0]],
+        [0b00001000, [0, 1, 0, 0, 0, 0, 0, 0]],
+        [0b00000001, [0, 0, 1, 0, 0, 0, 0, 0]],
+        [0b01000000, [0, 0, 0, 1, 0, 0, 0, 0]],
+        [0b00000010, [0, 0, 0, 0, 1, 0, 0, 0]],
+        [0b10000000, [0, 0, 0, 0, 0, 1, 0, 0]],
+        [0b00010000, [0, 0, 0, 0, 0, 0, 1, 0]],
+        [0b00000100, [0, 0, 0, 0, 0, 0, 0, 1]],
+    ])
+    def test_rotation_is_clockwise(self, rotated, neighbors):
+        t = TileConnection(neighbors)
+        rot = t.rotate90()
+        assert rot.encodeSmall() == rotated
+
     @pytest.mark.parametrize("neighbors", correct_neighbors())
     def test_v_flip(self, neighbors):
         t = TileConnection(neighbors)
@@ -174,7 +189,7 @@ class TestTileConnection:
     ])
     def test_get_permutations(self, expected, neighbors):
         t = TileConnection(neighbors)
-        perms = t.getPermutations()
+        perms = t.getPossibleNeighborhoods()
         perms_enc = [p.encodeSmall() for p in perms]
         if expected == "all":
             assert len(perms) == 2 ** 8

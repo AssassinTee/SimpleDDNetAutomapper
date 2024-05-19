@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QAbstractButton
 
 from src.images_helper import ImageHelper
 from src.logic.tile_handler import TileHandler
-from src.signals.signal_emitter import NeighborClickedEmitter
+from src.signals.signal_emitter import ConfigurationClickedEmitter
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile
@@ -19,7 +19,7 @@ class TileConnectionButton(QAbstractButton):
 
     def __init__(self, button_id, parent=None):
         super().__init__(parent)
-        self.signal_emitter = NeighborClickedEmitter(parent)
+        self.signal_emitter = ConfigurationClickedEmitter(parent)
         self.button_id = button_id
         self._state = 2  # Any
         self._num_states = 3
@@ -86,7 +86,11 @@ class TileConnectionButton(QAbstractButton):
                 (self._tile.getID() == tile.getID() or self._tile.tile_data == tile.tile_data):
             return
 
-        self._tile = tile
+        if tile is None:
+            self._tile = tile
+        else:
+            self._tile = tile.__copy__()
+
         if update_neighbors:
             self._update_neighborhood()
         self.update()

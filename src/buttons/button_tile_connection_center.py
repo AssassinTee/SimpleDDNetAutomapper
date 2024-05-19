@@ -24,10 +24,23 @@ class TileConnectionCenterButton(TileConnectionButton):
             ["Rotate", "Allow center tile to be rotated"],
             ["Empty", "Allow center tile to be placed on empty blocks"],
         ]
+        self.checkboxes = []
         for i, (name, tool_tip) in enumerate(checkbox_contents):
             widget = QCheckBox(name)
             widget.setToolTip(tool_tip)
+            self.checkboxes.append(widget)
             layout.addWidget(widget, i // 2, i % 2)
+
+        # these are maybe not required but nice to have
+        self.box_v_flip = self.checkboxes[0]
+        self.box_h_flip = self.checkboxes[1]
+        self.box_rot = self.checkboxes[2]
+        self.box_empty = self.checkboxes[3]
+
+        self.box_v_flip.stateChanged.connect(self.updateVFlip)
+        self.box_h_flip.stateChanged.connect(self.updateHFlip)
+        self.box_rot.stateChanged.connect(self.updateRot)
+        self.box_empty.stateChanged.connect(self.updateEmpty)
 
         self.setLayout(layout)
 
@@ -46,6 +59,25 @@ class TileConnectionCenterButton(TileConnectionButton):
         pass
 
     def setTile(self, tile: Optional["Tile"], update_neighbors=True):
-        # TODO set checkboxes
         self._tile = tile
+        self.box_h_flip.setCheckState(tile.tile_data.mods.can_h_flip)
+        self.box_v_flip.setCheckState(tile.tile_data.mods.can_v_flip)
+        self.box_rot.setCheckState(tile.tile_data.mods.can_rot)
+        self.box_empty.setCheckState(tile.tile_data.status.empty)
         self.update()
+
+    def updateVFlip(self, _):
+        value = self.box_v_flip.isChecked()
+        self.signal_emitter.modification_signal.emit(0, value)
+
+    def updateHFlip(self, _):
+        value = self.box_h_flip.isChecked()
+        self.signal_emitter.modification_signal.emit(1, value)
+
+    def updateRot(self, _):
+        value = self.box_rot.isChecked()
+        self.signal_emitter.modification_signal.emit(2, value)
+
+    def updateEmpty(self, _):
+        value = self.box_empty.isChecked()
+        self.signal_emitter.modification_signal.emit(3, value)
