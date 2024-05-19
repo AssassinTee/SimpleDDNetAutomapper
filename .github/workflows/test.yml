@@ -27,6 +27,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.architecture }}
 
+      - name: Install LibEGL
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update && sudo apt install libegl1 -y
+
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
