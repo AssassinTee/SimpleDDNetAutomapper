@@ -26,7 +26,7 @@ class TestTileHandler:
         assert id(th1) == id(th2)
 
     @pytest.fixture
-    def tile(self, qtbot):
+    def tile(self, init_q_app):
         tc = TileConnection([0, 1, 2, 1, 0, 1, 0, 2])  # asymetrical
         ts = TileStatus()
         tm = TileMods(True, True, True)
@@ -57,7 +57,7 @@ class TestTileHandler:
     def test_get_pixmap(self, add_tile, add_pixmap):
         assert TileHandler.instance().getPixmap(0) is not None
 
-    def test_get_pixmap_invalid_id(self, qtbot):
+    def test_get_pixmap_invalid_id(self):
         with pytest.raises(ValueError):
             TileHandler.instance().getPixmap(256)
 
@@ -69,7 +69,7 @@ class TestTileHandler:
         with pytest.raises(ValueError):
             TileHandler.instance().addPixmap(tile)
 
-    def test_add_tile_to_storage_illegal_base_tile(self, qtbot):
+    def test_add_tile_to_storage_illegal_base_tile(self):
         with pytest.raises(ValueError):
             b = BaseTile(0, None)
             TileHandler.instance().addTileToStorage(b)
