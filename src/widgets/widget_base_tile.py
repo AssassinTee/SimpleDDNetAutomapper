@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
-from PyQt5.QtGui import QPainter, QTransform, QPixmap
-from PyQt5.QtWidgets import QLabel
+from PyQt6.QtGui import QPainter, QTransform, QPixmap
+from PyQt6.QtWidgets import QLabel
 
 from src.images_helper import ImageHelper
 from src.logic.tile_data import TileData

@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog
-from PyQt5.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog
+from PyQt6.QtGui import QPixmap
 from src.widgets.widget_tile_clicker import TileClicker
 
 
@@ -27,10 +27,10 @@ class ImageSelectorWidget(QWidget):
     def select_image(self):
         file_dialog = QFileDialog(self)
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp)")
-        file_dialog.setViewMode(QFileDialog.List)
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setViewMode(QFileDialog.ViewMode.List)
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
 
-        if file_dialog.exec_():
+        if file_dialog.exec():
             selected_files = file_dialog.selectedFiles()
         else:
             print("ERROR")

@@ -2,8 +2,8 @@ import random
 from typing import List, Optional, Tuple
 
 import numpy as np
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel
 
 from src.logic.tile_status import TileStatus
 from src.globals import EIGHT_NEIGHBORS
@@ -51,12 +51,12 @@ class CheckMapDialog(QDialog):
                 self.layout.addWidget(tile, grid_y, grid_x, 1, 1)
 
         # add ok and cancel button
-        q_btn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QDialogButtonBox(q_btn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        self.layout.addWidget(self.buttonBox, height + 2, 0, 1, width, Qt.AlignHCenter)
+        self.layout.addWidget(self.buttonBox, height + 2, 0, 1, width, Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(self.layout)
         self.setModal(True)
 

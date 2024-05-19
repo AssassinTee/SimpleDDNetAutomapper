@@ -1,7 +1,7 @@
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 import pytest
-from PyQt5.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap
 
 from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
@@ -9,6 +9,7 @@ from src.logic.tile_modificators import TileMods
 from src.logic.tile_status import TileStatus
 from src.logic.tile_handler import TileHandler
 from src.widgets.widget_base_tile import BaseTile
+from src.images_helper import ImageHelper
 
 
 class TestTileHandler:
@@ -41,8 +42,9 @@ class TestTileHandler:
 
     @pytest.fixture
     def add_pixmap(self, tile):
-        m = QPixmap()
-        tile.setPixmap(m)
+        # add any pixmap
+        pm = ImageHelper.instance().NO_TILE_FOUND
+        tile.setPixmap(pm)
         TileHandler.instance().addPixmap(tile)
         yield
         del TileHandler.instance().pix_map[tile.tile_id]

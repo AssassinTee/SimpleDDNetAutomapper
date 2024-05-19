@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from PyQt5.QtCore import QPoint
-from PyQt5.QtGui import QPainter, QPolygon, QRegion, QPixmap, QColor, QPen
-from PyQt5.QtWidgets import QAbstractButton
+from PyQt6.QtCore import QPoint
+from PyQt6.QtGui import QPainter, QPolygon, QRegion, QPixmap, QColor, QPen
+from PyQt6.QtWidgets import QAbstractButton
 
 from src.images_helper import ImageHelper
 from src.logic.tile_handler import TileHandler

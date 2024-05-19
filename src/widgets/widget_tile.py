@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QPainter, QPen, QColor, QPixmap, QImage
+from PyQt6.QtCore import Qt
 
 from logic.tile_modificators import TileMods
 from src.logic.tile_status import TileStatus
@@ -45,7 +45,7 @@ class Tile(BaseTile):
         if self.lock:
             # draw locked emoji
             qp.setPen(QPen(QColor(40, 40, 40, 255), 10))
-            qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignVCenter, "🔒")
+            qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "🔒")
         else:
             if self.hovered or self.selected:
                 qp.fillRect(0, 0, self.width - 1, self.height - 1, QColor(255, 255, 255, 100))
@@ -53,14 +53,14 @@ class Tile(BaseTile):
             if self.tile_data:
                 if self.data_checked:
                     qp.setPen(QPen(QColor(0, 255, 0, 255), 10))
-                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignVCenter, "✔️")
+                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "✔️")
                 else:
                     qp.setPen(QPen(QColor(255, 255, 0, 255), 10))
-                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignVCenter, "?")
+                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "?")
 
         # draw outline
         pen = QPen(QColor(0, 0, 0, 127), 1)
-        pen.setStyle(Qt.DotLine)
+        pen.setStyle(Qt.PenStyle.DotLine)
         qp.setPen(pen)
         qp.drawRect(0, 0, self.width - 1, self.height - 1)
 
@@ -102,7 +102,7 @@ class Tile(BaseTile):
     def setPixmap(self, pixmap: QPixmap):
         super().setPixmap(pixmap)
         TileHandler.instance().addPixmap(self)
-        self.image = pixmap.toImage().convertToFormat(QImage.Format_ARGB32)
+        self.image = pixmap.toImage().convertToFormat(QImage.Format.Format_ARGB32)
         self.scanImage()
 
     def scanImage(self):

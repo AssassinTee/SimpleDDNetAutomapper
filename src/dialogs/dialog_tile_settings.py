@@ -2,8 +2,8 @@ import random
 from functools import cache
 from typing import TYPE_CHECKING, List, Optional
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QGridLayout, QDialogButtonBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox
 
 from src.buttons.button_tile_connection import TileConnectionButton
 from src.buttons.button_tile_connection_center import TileConnectionCenterButton
@@ -49,12 +49,12 @@ class TileSettingsDialog(QDialog):
         # self.center.setMain()
         self.tile = tile
 
-        q_btn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QDialogButtonBox(q_btn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        self.layout.addWidget(self.buttonBox, 6, 0, 1, 6, Qt.AlignHCenter)
+        self.layout.addWidget(self.buttonBox, 6, 0, 1, 6, Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(self.layout)
 
         self.setModal(True)

@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QImage, QPainter, QPixmap
+from PyQt6.QtGui import QImage, QPainter, QPixmap
 
 
 class ImageHelper:

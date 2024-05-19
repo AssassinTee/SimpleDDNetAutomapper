@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Optional
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtWidgets import QGridLayout, QCheckBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPainter, QPen, QColor
+from PyQt6.QtWidgets import QGridLayout, QCheckBox
 
 from src.buttons.button_tile_connection import TileConnectionButton
 
@@ -48,10 +48,10 @@ class TileConnectionCenterButton(TileConnectionButton):
     def _paintOutline(self, qp: QPainter):
         size = self.size()
         pen = QPen(QColor(0, 0, 0, 255), 1)
-        pen.setStyle(Qt.DotLine)
+        pen.setStyle(Qt.PenStyle.DotLine)
         qp.setPen(pen)
         qp.drawRect(0, 0, size.width() - 1, size.height() - 1)
-        pen.setStyle(Qt.SolidLine)
+        pen.setStyle(Qt.PenStyle.SolidLine)
         qp.setPen(pen)
 
     # override

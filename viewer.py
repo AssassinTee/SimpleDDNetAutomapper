@@ -1,8 +1,8 @@
 import sys
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QScrollArea
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QScrollArea
 
 from src.dockwidgets.dockwidget_mapper_generator import MapperGeneratorDockwidget
 from src.widgets.widget_image_selector import ImageSelectorWidget
@@ -24,8 +24,8 @@ class MainWindow(QMainWindow):
 
     def create_dock_windows(self):
         dock = MapperGeneratorDockwidget()
-        dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        self.addDockWidget(Qt.RightDockWidgetArea, dock)
+        dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
 
     def load_image(self):
         file_dialog = QFileDialog(self)
@@ -39,8 +39,8 @@ def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    window.setWindowState(window.windowState() | Qt.WindowMaximized)  # Maximize window
-    sys.exit(app.exec_())
+    window.setWindowState(window.windowState() | Qt.WindowState.WindowMaximized)  # Maximize window
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

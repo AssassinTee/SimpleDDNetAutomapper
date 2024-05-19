@@ -1,6 +1,6 @@
 from typing import List, Dict, TYPE_CHECKING, Tuple
 
-from PyQt5.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap
 
 from src.globals import EIGHT_NEIGHBORS
 from src.logic.tile_connection import TileConnection
@@ -85,7 +85,7 @@ class TileHandler:
     def addPixmap(self, tile: BaseTile):
         if tile.tile_id in self.pix_map:
             raise ValueError(f"ID {tile.tile_id} already in pixmap")  # no overwrite by design
-        if tile.pixmap() is None:
+        if tile.pixmap().isNull():
             raise ValueError("Pixmap is empty")
         self.pix_map[tile.tile_id] = tile.pixmap()
 

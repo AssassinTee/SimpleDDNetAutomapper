@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QFileDialog, \
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QFileDialog, \
     QMessageBox
-from PyQt5.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap
 
 from src.dialogs.dialog_check_map import CheckMapDialog
 
@@ -38,7 +38,7 @@ class MapperGeneratorWidget(QWidget):
 
     def open_file_dialog(self):
         cmd = CheckMapDialog(self)
-        cmd.exec_()
+        cmd.exec()
         """
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",
