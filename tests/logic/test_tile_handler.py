@@ -1,7 +1,4 @@
-from unittest.mock import patch
-
 import pytest
-from PyQt6.QtGui import QPixmap
 
 from src.logic.tile_connection import TileConnection
 from src.logic.tile_data import TileData
@@ -27,7 +24,7 @@ class TestTileHandler:
         assert id(th1) == id(th2)
 
     @pytest.fixture
-    def tile(self, init_q_app):
+    def tile(self, q_app):
         tc = TileConnection([0, 1, 2, 1, 0, 1, 0, 2])  # asymetrical
         ts = TileStatus()
         tm = TileMods(True, True, True)

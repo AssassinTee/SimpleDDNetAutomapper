@@ -30,7 +30,9 @@ jobs:
       - name: Install LibEGL
         if: matrix.os == 'ubuntu-latest'
         run: |
+          : # https://askubuntu.com/questions/1485442/issue-with-installing-pyqt6-on-ubuntu-22-04
           sudo apt update && sudo apt install libegl1 -y
+          sudo apt-get install -qq libglu1-mesa-dev libx11-xcb-dev '^libxcb*'
 
       - name: Install Dependencies
         run: |
