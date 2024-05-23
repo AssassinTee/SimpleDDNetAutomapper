@@ -21,3 +21,4 @@ var/
 # custom
 tools
 *.xcf
+config.yml

@@ -32,16 +32,10 @@ class ImageSelectorWidget(QWidget):
 
         if file_dialog.exec():
             selected_files = file_dialog.selectedFiles()
-        else:
-            print("ERROR")
-
-            # debug code
-            selected_files = ["data/img/grass_main.png"]
-
-        if selected_files:
-            image_path = selected_files[0]
-            pixmap = QPixmap(image_path)
-            if not pixmap.isNull():
-                self.image_label.setPixmap(pixmap)
-            else:
-                self.image_label.setText("Invalid image file")
+            if selected_files:
+                image_path = selected_files[0]
+                pixmap = QPixmap(image_path)
+                if not pixmap.isNull():
+                    self.image_label.setPixmap(pixmap)
+                else:
+                    self.image_label.setText("Invalid image file")

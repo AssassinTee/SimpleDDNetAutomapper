@@ -1,7 +1,7 @@
 from PyQt6.QtGui import QPainter, QPen, QColor, QPixmap, QImage
 from PyQt6.QtCore import Qt
 
-from logic.tile_modificators import TileMods
+from src.backend.tile_modificators import TileMods
 from src.backend.tile_status import TileStatus
 from src.dialogs.dialog_tile_settings import TileSettingsDialog
 from src.backend.tile_connection import TileConnection
@@ -9,7 +9,7 @@ from src.backend.tile_data import TileData
 from src.backend.tile_handler import TileHandler
 from typing import Optional, Any
 
-from widgets.widget_base_tile import BaseTile
+from src.widgets.widget_base_tile import BaseTile
 
 
 class Tile(BaseTile):
