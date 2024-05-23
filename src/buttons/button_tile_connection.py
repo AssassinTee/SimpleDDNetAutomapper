@@ -5,7 +5,7 @@ from PyQt6.QtGui import QPainter, QPolygon, QRegion, QPixmap, QColor, QPen
 from PyQt6.QtWidgets import QAbstractButton
 
 from src.images_helper import ImageHelper
-from src.logic.tile_handler import TileHandler
+from src.backend.tile_handler import TileHandler
 from src.signals.signal_emitter import ConfigurationClickedEmitter
 
 if TYPE_CHECKING:

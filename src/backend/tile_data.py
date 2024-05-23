@@ -1,6 +1,6 @@
-from src.logic.tile_modificators import TileMods
-from src.logic.tile_status import TileStatus
-from src.logic.tile_connection import TileConnection
+from src.backend.tile_modificators import TileMods
+from src.backend.tile_status import TileStatus
+from src.backend.tile_connection import TileConnection
 from typing import List, Tuple
 
 TileMapState = Tuple[TileConnection, TileStatus]

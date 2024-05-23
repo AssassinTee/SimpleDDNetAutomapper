@@ -1,6 +1,6 @@
 import pytest
 
-from src.logic.tile_status import TileStatus
+from src.backend.tile_status import TileStatus
 
 
 class TestTileStatus:

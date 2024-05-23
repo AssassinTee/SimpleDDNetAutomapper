@@ -4,7 +4,7 @@ from PyQt6.QtGui import QPainter, QTransform, QPixmap
 from PyQt6.QtWidgets import QLabel
 
 from src.images_helper import ImageHelper
-from src.logic.tile_data import TileData
+from src.backend.tile_data import TileData
 
 
 class BaseTile(QLabel):

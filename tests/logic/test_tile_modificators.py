@@ -1,6 +1,6 @@
 import pytest
 
-from src.logic.tile_modificators import TileMods
+from src.backend.tile_modificators import TileMods
 
 
 class TestTileModificators:

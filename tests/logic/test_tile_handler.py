@@ -1,10 +1,10 @@
 import pytest
 
-from src.logic.tile_connection import TileConnection
-from src.logic.tile_data import TileData
-from src.logic.tile_modificators import TileMods
-from src.logic.tile_status import TileStatus
-from src.logic.tile_handler import TileHandler
+from src.backend.tile_connection import TileConnection
+from src.backend.tile_data import TileData
+from src.backend.tile_modificators import TileMods
+from src.backend.tile_status import TileStatus
+from src.backend.tile_handler import TileHandler
 from src.widgets.widget_base_tile import BaseTile
 from src.images_helper import ImageHelper
 

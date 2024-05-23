@@ -3,8 +3,8 @@ from typing import List, Dict, TYPE_CHECKING, Tuple
 from PyQt6.QtGui import QPixmap
 
 from src.globals import EIGHT_NEIGHBORS
-from src.logic.tile_connection import TileConnection
-from src.logic.tile_status import TileStatus
+from src.backend.tile_connection import TileConnection
+from src.backend.tile_status import TileStatus
 from src.widgets.widget_base_tile import BaseTile
 
 if TYPE_CHECKING:

@@ -8,11 +8,11 @@ from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox
 from src.buttons.button_tile_connection import TileConnectionButton
 from src.buttons.button_tile_connection_center import TileConnectionCenterButton
 from src.globals import EIGHT_NEIGHBORS
-from src.logic.tile_connection import TileConnection
-from src.logic.tile_data import TileData
-from src.logic.tile_handler import TileHandler
-from src.logic.tile_status import TileStatus
-from src.logic.tile_modificators import TileMods
+from src.backend.tile_connection import TileConnection
+from src.backend.tile_data import TileData
+from src.backend.tile_handler import TileHandler
+from src.backend.tile_status import TileStatus
+from src.backend.tile_modificators import TileMods
 
 if TYPE_CHECKING:
     from src.widgets.widget_tile import Tile

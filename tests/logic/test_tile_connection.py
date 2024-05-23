@@ -1,4 +1,4 @@
-from src.logic.tile_connection import TileConnection, encodeListSmall
+from src.backend.tile_connection import TileConnection, encodeListSmall
 import pytest
 
 

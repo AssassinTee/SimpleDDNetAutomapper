@@ -5,11 +5,11 @@ import numpy as np
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel
 
-from src.logic.tile_status import TileStatus
+from src.backend.tile_status import TileStatus
 from src.globals import EIGHT_NEIGHBORS
 from src.images_helper import ImageHelper
-from src.logic.tile_connection import TileConnection
-from src.logic.tile_handler import TileHandler, NeighborhoodEntry
+from src.backend.tile_connection import TileConnection
+from src.backend.tile_handler import TileHandler, NeighborhoodEntry
 from src.widgets.widget_base_tile import BaseTile
 
 
