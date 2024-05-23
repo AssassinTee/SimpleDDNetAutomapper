@@ -46,6 +46,7 @@ class TestTileHandler:
         yield
         del TileHandler.instance().pix_map[tile.tile_id]
 
+    @pytest.mark.requires_q_app
     def test_add_tile_to_storage(self, add_tile):
         pass
 
@@ -53,6 +54,7 @@ class TestTileHandler:
         with pytest.raises(ValueError):
             TileHandler.instance().getTile(1)
 
+    @pytest.mark.requires_q_app
     def test_get_pixmap(self, add_tile, add_pixmap):
         assert TileHandler.instance().getPixmap(0) is not None
 
@@ -60,19 +62,23 @@ class TestTileHandler:
         with pytest.raises(ValueError):
             TileHandler.instance().getPixmap(256)
 
+    @pytest.mark.requires_q_app
     def test_add_pixmap_already_entered(self, tile, add_pixmap):
         with pytest.raises(ValueError):
             TileHandler.instance().addPixmap(tile)
 
+    @pytest.mark.requires_q_app
     def test_add_pixmap_empty(self, tile):
         with pytest.raises(ValueError):
             TileHandler.instance().addPixmap(tile)
 
+    @pytest.mark.requires_q_app
     def test_add_tile_to_storage_illegal_base_tile(self):
         with pytest.raises(ValueError):
             b = BaseTile(0, None)
             TileHandler.instance().addTileToStorage(b)
 
+    @pytest.mark.requires_q_app
     def test_find_tiles(self, add_tile, tile):
         tile_states = tile.tile_data.getAllPossibleTileStates()
         states = [s for _, s in tile_states]
@@ -83,6 +89,7 @@ class TestTileHandler:
                 assert tile_id == tile.tile_id
                 assert state in states
 
+    @pytest.mark.requires_q_app
     def test_remove_tile_from_storage(self, add_tile, tile):
         TileHandler.instance().removeTileFromStorage(tile.tile_id)
         tile_states = tile.tile_data.getAllPossibleTileStates()
@@ -92,6 +99,7 @@ class TestTileHandler:
 
         assert len(TileHandler.instance().tile_id_map) == 0
 
+    @pytest.mark.requires_q_app
     def test_update_storage(self, add_tile, tile):
         neighborhood_entry_list = TileHandler.instance().findTiles(tile.tile_data.con)
         num_matches = len(neighborhood_entry_list)

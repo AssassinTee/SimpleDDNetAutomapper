@@ -40,5 +40,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run Tests
+      - name: Run Tests (without QApplication)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          : # as long as this bug is present I can't test this in the pipeline, PyQt6 doesn't install well on ubuntu
+          pytest -m "not requires_q_app"
+
+      - name: Run Tests (with QApplication)
+        if: matrix.os != 'ubuntu-latest'
         run: pytest
