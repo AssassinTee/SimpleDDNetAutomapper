@@ -1,8 +1,10 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QFileDialog, \
-    QMessageBox
+import subprocess
+
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit, QComboBox
 from PyQt6.QtGui import QPixmap
 
 from src.dialogs.dialog_check_map import CheckMapDialog
+from src.config.config_manager import ConfigManager
 
 
 class MapperGeneratorWidget(QWidget):
@@ -10,33 +12,76 @@ class MapperGeneratorWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        # vertical list
         self.layout = QVBoxLayout()
 
+        # add radio buttons
         self.radio_layout = QHBoxLayout()
-        self.radio_layout.addWidget(QRadioButton("Easy"))
-        self.radio_layout.addWidget(QRadioButton("Normal"))
-        self.radio_layout.addWidget(QRadioButton("Advanced"))
+        radio_button_labels = ["New", "Overwrite existing"]
+        self.radio_buttons = [QRadioButton(label) for label in radio_button_labels]
+        for radio_button in self.radio_buttons:
+            self.radio_layout.addWidget(radio_button)
+        # select first radio button
+        self.radio_buttons[0].setChecked(True)
         self.layout.addLayout(self.radio_layout)
 
+        # new automapper
+        self.new_mapper = QWidget()
+        new_mapper_layout = QHBoxLayout()
+        self.new_mapper_line_edit = QLineEdit()
+        new_mapper_layout.addWidget(QLabel("Name Mapping Rule:"))
+        new_mapper_layout.addWidget(self.new_mapper_line_edit)
+        self.new_mapper.setLayout(new_mapper_layout)
+        self.layout.addWidget(self.new_mapper)
+
+        # existing auto mapper
+        self.existing_mapper = QWidget()
+        existing_mapper_layout = QHBoxLayout()
+        self.existing_mapper_combobox = QComboBox()
+        self.existing_mapper_combobox.insertItem(0, "TODO")
+        existing_mapper_layout.addWidget(QLabel("Select Mapping Rule:"))
+        existing_mapper_layout.addWidget(self.existing_mapper_combobox)
+        self.existing_mapper.setLayout(existing_mapper_layout)
+        self.layout.addWidget(self.existing_mapper)
+        # hide by default
+        self.existing_mapper.hide()
+        # self.select_auto_mapper = QSelect()
+
+        # Placeholder
         self.image_label = QLabel("No Image")
         self.layout.addWidget(self.image_label)
 
+        # check ddnet
+        self.ddnet_push_button = QPushButton("Check with ddnet")
+        self.layout.addWidget(self.ddnet_push_button)
+        if ConfigManager.instance().config()["client_path"] is None:
+            self.ddnet_push_button.setDisabled(True)
+
+        # spacer
+        self.layout.addStretch(1)
+
+        # Generate button
         self.generate_button = QPushButton("Generate")
-        self.generate_button.clicked.connect(self.open_file_dialog)
         self.layout.addWidget(self.generate_button)
 
         self.setLayout(self.layout)
         self.image_path = "data/img/grass_main.png"
-        self.set_image(self.image_path)
+        self.setImage(self.image_path)
 
-    def set_image(self, image_path):
+        # handle connections
+        for radio_button in self.radio_buttons:
+            radio_button.toggled.connect(self.ruleNameToggle)
+        self.generate_button.clicked.connect(self.openFileDialog)
+        self.ddnet_push_button.clicked.connect(self.startDDNetCheck)
+
+    def setImage(self, image_path):
         pixmap = QPixmap(image_path)
         self.image_label.setPixmap(pixmap)
         self.image_path = image_path
         self.image_label.setScaledContents(True)
         self.image_label.setMaximumSize(200, 200)
 
-    def open_file_dialog(self):
+    def openFileDialog(self):
         cmd = CheckMapDialog(self)
         cmd.exec()
         """
@@ -50,3 +95,24 @@ class MapperGeneratorWidget(QWidget):
             else:
                 QMessageBox.warning(self, "Warning", "Please select an image first.")
         """
+    def ruleNameToggle(self):
+        if self.radio_buttons[0].isChecked():
+            self.existing_mapper.hide()
+            self.new_mapper.show()
+        elif self.radio_buttons[1].isChecked():
+            self.new_mapper.hide()
+            self.existing_mapper.show()
+
+    def startDDNetCheck(self):
+        # TODO
+        # generate Map
+        # add tmp mapping rule
+        # automap map with debroijn torus
+        # open map with ddnet
+        map_name = ""
+        editor_path = ConfigManager.instance().config()["client_path"]
+        if not editor_path:
+            self.ddnet_push_button.setDisabled(True)
+            return
+        cmd = [editor_path, map_name]
+        subprocess.Popen(cmd, start_new_session=True)
