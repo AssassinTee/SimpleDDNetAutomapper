@@ -15,8 +15,6 @@ from src.widgets.widget_base_tile import BaseTile
 class Tile(BaseTile):
     def __init__(self, tile_id: int, width=64, height=64) -> None:
         super().__init__(tile_id)
-        self.width = width
-        self.height = height
         self.setMaximumSize(width, height)
 
         self.mousePressEvent = self.openDialog
@@ -45,24 +43,24 @@ class Tile(BaseTile):
         if self.lock:
             # draw locked emoji
             qp.setPen(QPen(QColor(40, 40, 40, 255), 10))
-            qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "🔒")
+            qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "🔒")
         else:
             if self.hovered or self.selected:
-                qp.fillRect(0, 0, self.width - 1, self.height - 1, QColor(255, 255, 255, 100))
+                qp.fillRect(0, 0, self.width() - 1, self.height() - 1, QColor(255, 255, 255, 100))
 
             if self.tile_data:
                 if self.data_checked:
                     qp.setPen(QPen(QColor(0, 255, 0, 255), 10))
-                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "✔️")
+                    qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "✔️")
                 else:
                     qp.setPen(QPen(QColor(255, 255, 0, 255), 10))
-                    qp.drawText(self.width - 20, self.height - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "?")
+                    qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "?")
 
         # draw outline
         pen = QPen(QColor(0, 0, 0, 127), 1)
         pen.setStyle(Qt.PenStyle.DotLine)
         qp.setPen(pen)
-        qp.drawRect(0, 0, self.width - 1, self.height - 1)
+        qp.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def openDialog(self, _):
         # one does not simply configure locked tiles

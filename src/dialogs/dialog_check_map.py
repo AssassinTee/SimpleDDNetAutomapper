@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel
+from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel, QApplication
 
 from src.backend.tile_status import TileStatus
 from src.globals import EIGHT_NEIGHBORS
@@ -32,6 +32,13 @@ class CheckMapDialog(QDialog):
         self.layout.setRowStretch(height + 1, 1)
         self.layout.setColumnStretch(width + 1, 1)
 
+        # calculate tile size
+        desktop_size = QApplication.primaryScreen().size()
+        size_height_rows = 18 + 1 + 1  # height of map + buttons + buffer
+        size_width_cols = 34 + 1  # width of map + buffer
+        value = min(desktop_size.height() / size_height_rows, desktop_size.width() / size_width_cols)
+        tile_size = int(min(max(32, value), 64))
+
         # add map tiles into QGridLayout as QLabels
         for map_y in range(height):
             for map_x in range(width):
@@ -40,14 +47,14 @@ class CheckMapDialog(QDialog):
 
                 tile, status = CheckMapDialog._getMapTile(solid_map, map_x, map_y)
                 if not tile:
-                    tile = QLabel()  # Empty tile
+                    tile = BaseTile(-1)  # Empty tile
                     if solid_map[map_y, map_x] == 0:
                         tile.setPixmap(ImageHelper.instance().NO_TILE_FOUND_EMPTY)
                     else:
                         tile.setPixmap(ImageHelper.instance().NO_TILE_FOUND)
                 else:
                     tile.tile_data.status = status
-                tile.setFixedSize(QSize(64, 64))
+                tile.setFixedSize(QSize(tile_size, tile_size))
                 self.layout.addWidget(tile, grid_y, grid_x, 1, 1)
 
         # add ok and cancel button
