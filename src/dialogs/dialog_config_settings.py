@@ -17,7 +17,7 @@ class ConfigSettingsDialog(QDialog):
 
         configs = [
             ("client_path", "Client path:", QFileDialog.FileMode.ExistingFile),
-            ("editor_path", "Editor directory path:", QFileDialog.FileMode.Directory)
+            ("data_path", "Data directory path:", QFileDialog.FileMode.Directory)
         ]
 
         index = 0

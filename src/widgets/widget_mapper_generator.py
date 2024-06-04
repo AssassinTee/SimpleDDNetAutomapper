@@ -116,9 +116,9 @@ class MapperGeneratorWidget(QWidget):
         # automap map with debroijn torus
         # open map with ddnet
         map_name = ""
-        editor_path = ConfigManager.instance().config()["client_path"]
-        if not editor_path:
+        client_path = ConfigManager.instance().config()["client_path"]
+        if not client_path:
             self.ddnet_push_button.setDisabled(True)
             return
-        cmd = [editor_path, map_name]
+        cmd = [client_path, map_name]
         subprocess.Popen(cmd, start_new_session=True)

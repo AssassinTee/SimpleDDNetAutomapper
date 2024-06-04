@@ -31,7 +31,7 @@ class StorageFinderBase(ABC):
         pass
 
     @abstractmethod
-    def getEditorPath(self):
+    def getDataPath(self):
         pass
 
 
@@ -102,10 +102,10 @@ class StorageFinder(StorageFinderBase):
                 pass
         return None
 
-    def getEditorPath(self):
+    def getDataPath(self):
         if self.data_path:
             try:
-                p = Path(self.data_path).joinpath("editor")
+                p = Path(self.data_path)
                 if p.is_dir():
                     return p
             except OSError:

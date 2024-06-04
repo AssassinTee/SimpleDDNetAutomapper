@@ -25,11 +25,11 @@ class ConfigManager:
 
     def createConfig(self):
         client_path = StorageFinder.instance().getClientPath()
-        editor_path = StorageFinder.instance().getEditorPath()
+        data_path = StorageFinder.instance().getDataPath()
         data = {
             'version': "1.0.0",
             'client_path': str(client_path),
-            'editor_path': str(editor_path),
+            'data_path': str(data_path),
         }
         self._config = data
 

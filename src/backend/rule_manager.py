@@ -1,8 +1,10 @@
-from typing import List, Dict
+from pathlib import Path
+from typing import List, Dict, Optional
 
 from src.backend.tile_connection import TileConnection
 from src.backend.tile_handler import TileHandler
 from src.backend.tile_status import TileStatus
+from src.config.config_manager import ConfigManager
 from src.globals import NUM_TILES
 from src.widgets.widget_base_tile import BaseTile
 
@@ -17,14 +19,24 @@ class RuleManager:
 
     @staticmethod
     def _loadRuleFile(filename_base) -> RuleConfig:
-        # filename = f"{filename_base}.rules"
-        # TODO check if file exists, if exists, load
-        # StorageFinder.findRule(filename)
-        # if exists
-        # config = ConfigParser()
-        # config.read(filename)
-        # else
-        config = {filename_base: []}
+        filename = f"{filename_base}.rules"
+        data_path = Path(ConfigManager.config()["data_path"])
+        if not data_path:
+            raise ValueError("No editor directory path known")
+
+        automapper_path = data_path.joinpath(Path("editor/automap"))
+        if not automapper_path.exists():
+            automapper_path.mkdir()
+
+        full_file_path = automapper_path.joinpath(Path(filename))
+
+        # load file if it exists
+        if full_file_path.is_file():
+            config = RuleManager._readRuleFile(full_file_path)
+
+        # file doesn't exist
+        else:
+            config = {filename_base: []}
         return config
 
     @staticmethod
@@ -94,8 +106,8 @@ class RuleManager:
         str_rotate = " ROTATE" if rotate else ""
         return f"{str_index}{str_x_flip}{str_y_flip}{str_rotate}"
 
-    @classmethod
-    def _writeRuleFile(cls, filename_base, config: RuleConfig):
+    @staticmethod
+    def _writeRuleFile(filename_base, config: RuleConfig):
         filename = f"{filename_base}.rules"
         with open(filename, 'w') as f:
             for key in config.keys():
@@ -104,3 +116,27 @@ class RuleManager:
                 for line in lines:
                     f.write(line)
                     f.write('\n')
+
+    @staticmethod
+    def _readRuleFile(full_file_path: Path) -> RuleConfig:
+        config = {}
+
+        with open(str(full_file_path), 'r', encoding='utf-8') as f:
+            section: Optional[str] = None
+
+            # read file line by line
+            while line := f.readline():
+                line = line.rstrip()
+
+                # handle sections
+                if len(line) >= 2 and line[0] == '[' and line[-1] == ']':
+                    section = line[1:-1]
+                    config[section] = []
+
+                # handle normal lines
+                else:
+                    if section:
+                        config[section].append(line)
+                    elif len(line) > 0:  # ignore empty lines
+                        raise ValueError("files may contain rules without section, aborting")
+        return config
