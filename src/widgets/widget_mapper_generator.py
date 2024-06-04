@@ -3,6 +3,8 @@ import subprocess
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit, QComboBox
 from PyQt6.QtGui import QPixmap
 
+from src.backend.rule_manager import RuleManager
+from src.backend.tile_handler import TileHandler
 from src.dialogs.dialog_check_map import CheckMapDialog
 from src.config.config_manager import ConfigManager
 
@@ -83,7 +85,11 @@ class MapperGeneratorWidget(QWidget):
 
     def openFileDialog(self):
         cmd = CheckMapDialog(self)
-        cmd.exec()
+        ret = cmd.exec()
+        if ret:
+            filename = "placeholder.rules"
+            rule_name = "DummyRule"
+            RuleManager.saveRule(filename, rule_name)
         """
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",

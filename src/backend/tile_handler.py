@@ -110,3 +110,8 @@ class TileHandler:
         if tile_id not in self.tile_id_map:
             raise ValueError(f"Unknown tile ID {tile_id}")
         return self.tile_id_map[tile_id].__copy__()
+
+    def findTilesByNeighborhood(self, neighborhood: int) -> List[NeighborhoodEntry]:
+        if neighborhood < 0 or neighborhood >= 2**8:
+            raise ValueError("only use 8 bit neighbourhood to find tiles by neighborhood")
+        return self.neighborhood_map[neighborhood]
