@@ -17,7 +17,7 @@ class RuleManager:
 
     @staticmethod
     def _loadRuleFile(filename_base) -> RuleConfig:
-        filename = f"{filename_base}.rules"
+        # filename = f"{filename_base}.rules"
         # TODO check if file exists, if exists, load
         # StorageFinder.findRule(filename)
         # if exists

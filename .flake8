@@ -7,6 +7,7 @@ exclude =
     __pycache__/
     # Exclude specific files
     tools/
+    venv
 
 max-line-length = 120
 
