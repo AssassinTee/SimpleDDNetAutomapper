@@ -48,20 +48,17 @@ class TileConnection:
         return ret
 
     """
-    rotates 45 degree
+    rotate 90 degrees
     """
-    def rotate45(self) -> "TileConnection":
+    def rot(self) -> "TileConnection":
         neighbors = [0] * EIGHT_NEIGHBORS
 
         # index of rotating neighbors
-        to_swap = [3, 0, 1, 5, 2, 6, 7, 4]  # TODO use enum
+        to_swap = [2, 4, 7, 1, 6, 0, 3, 5]  # TODO use enum
 
         for i in range(EIGHT_NEIGHBORS):
-            neighbors[i] = self._neighbors[to_swap[i]]
+            neighbors[to_swap[i]] = self._neighbors[i]
         return TileConnection(neighbors)
-
-    def rotate90(self) -> "TileConnection":
-        return self.rotate45().rotate45()  # yes, this could be optimized
 
     def vFlip(self) -> "TileConnection":
         neighbors = [0] * EIGHT_NEIGHBORS

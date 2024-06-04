@@ -129,22 +129,12 @@ class TestTileConnection:
         assert t2.encodeSmall() == expected
 
     @pytest.mark.parametrize("neighbors", correct_neighbors())
-    def test_rotate45(self, neighbors):
-        t = TileConnection(neighbors)
-        t2 = t.__copy__()
-        for i in range(8):  # rotate 360
-            t2 = t2.rotate45()
-        assert t2 == t
-        assert t2.rotate45().rotate45() == t.rotate90()
-
-    @pytest.mark.parametrize("neighbors", correct_neighbors())
-    def test_rotate90(self, neighbors):
+    def test_rotate(self, neighbors):
         t = TileConnection(neighbors)
         t2 = t.__copy__()
         for i in range(4):  # rotate 360
-            t2 = t2.rotate90()
+            t2 = t2.rot()
         assert t2 == t
-        assert t2.rotate45().rotate45() == t.rotate90()
 
     @pytest.mark.parametrize("rotated, neighbors", [
         [0b00100000, [1, 0, 0, 0, 0, 0, 0, 0]],
@@ -158,7 +148,7 @@ class TestTileConnection:
     ])
     def test_rotation_is_clockwise(self, rotated, neighbors):
         t = TileConnection(neighbors)
-        rot = t.rotate90()
+        rot = t.rot()
         assert rot.encodeSmall() == rotated
 
     @pytest.mark.parametrize("neighbors", correct_neighbors())
@@ -179,7 +169,7 @@ class TestTileConnection:
     def test_flip_rot_sanity(self, neighbors):
         t = TileConnection(neighbors)
         t2 = t.__copy__()
-        assert t.rotate90().rotate90() == t2.hFlip().vFlip()
+        assert t.rot().rot() == t2.hFlip().vFlip()
 
     @pytest.mark.parametrize("expected, neighbors", [
         [[0], [0] * 8],

@@ -6,7 +6,7 @@ class TileStatus:
     def __init__(self):
         self.v_flip = False
         self.h_flip = False
-        self.rot = 0
+        self.rot = False
         self.empty = False
 
     def __copy__(self) -> "TileStatus":
@@ -27,16 +27,19 @@ class TileStatus:
         status.h_flip = not self.h_flip
         return status
 
-    def rot45(self):
+    def rotate(self):
+        """
+        rotate 90 degrees
+        NOTE: rotated can only be on or off, rotated by 180 degree means NOT rotated, hflipped and vflipped,
+        while rotated by 270 degree means hflipped, vflipped and rotated
+        """
         status = self.__copy__()
-        status.rot += 45
-        status.rot %= 360
-        return status
-
-    def rot90(self):
-        status = self.__copy__()
-        status.rot += 90
-        status.rot %= 360
+        if self.rot:
+            status.rot = False
+            status.v_flip = not self.v_flip
+            status.h_flip = not self.h_flip
+        else:
+            status.rot = True
         return status
 
     def __eq__(self, other):

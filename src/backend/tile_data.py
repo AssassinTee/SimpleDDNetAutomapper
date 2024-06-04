@@ -23,6 +23,10 @@ class TileData:
         # the modifications describe, how the tile connections can be manipulated
         con_list = [(self.con.__copy__(), self.status.__copy__())]
 
+        # add original rotations
+        if self.mods.can_rot:
+            con_list.extend(self._getPossibleModificationsRotation(self.con, self.status))
+
         # add h flip variants
         if self.mods.can_h_flip:
             con_list.append((self.con.hFlip(), self.status.hFlip()))
@@ -40,9 +44,10 @@ class TileData:
         # add v flip and h flip
         if self.mods.can_v_flip and self.mods.can_h_flip:
             con_list.append((self.con.vFlip().hFlip(), self.status.vFlip().hFlip()))
-
-        # add original rotations
-        con_list.extend(self._getPossibleModificationsRotation(self.con, self.status))
+            if self.mods.can_rot:
+                con_list.extend(
+                    self._getPossibleModificationsRotation(self.con.vFlip().hFlip(), self.status.vFlip().hFlip())
+                )
 
         # remove duplicates TODO all of this can be optimized
         unique_ids = set()
@@ -56,15 +61,14 @@ class TileData:
         return ret
 
     def _getPossibleModificationsRotation(self, con: TileConnection, status: TileStatus):
-        con_list = []
         if self.mods.can_rot:
-            con_rot1, status_rot1 = con.rotate90(), status.rot90()
-            con_rot2, status_rot2 = con_rot1.rotate90(), status_rot1.rot90()
-            con_rot3, status_rot3 = con_rot2.rotate90(), status_rot2.rot90()
-            con_list.append((con_rot1, status_rot1))
-            con_list.append((con_rot2, status_rot2))
-            con_list.append((con_rot3, status_rot3))
-        return con_list
+            con_rot1, status_rot1 = con.rot(), status.rotate()
+            con_rot2, status_rot2 = con_rot1.rot(), status_rot1.rotate()
+            con_rot3, status_rot3 = con_rot2.rot(), status_rot2.rotate()
+            return [(con_rot1, status_rot1),
+                    (con_rot2, status_rot2),
+                    (con_rot3, status_rot3)]
+        return []
 
     def getAllPossibleTileStates(self) -> List[TileMapState]:
         all_possible_modifications = self.getAllPossibleModifications()
