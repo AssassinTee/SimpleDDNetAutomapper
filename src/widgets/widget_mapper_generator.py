@@ -5,9 +5,7 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLa
 from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
 from PyQt6.QtCore import QRegularExpression
 
-from config.app_state import AppState
-from src.backend.rule_manager import RuleManager
-from src.backend.tile_handler import TileHandler
+from src.config.app_state import AppState
 from src.dialogs.dialog_check_map import CheckMapDialog
 from src.config.config_manager import ConfigManager
 

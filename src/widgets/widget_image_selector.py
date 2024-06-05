@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog
 from PyQt6.QtGui import QPixmap
 
-from config.app_state import AppState
+from src.config.app_state import AppState
 from src.widgets.widget_tile_clicker import TileClicker
 
 
