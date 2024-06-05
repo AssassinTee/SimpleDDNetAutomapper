@@ -6,7 +6,7 @@ from typing import Optional
 
 from PyQt6.QtGui import QPixmap
 
-from backend.rule_manager import RuleManager
+from src.backend.rule_manager import RuleManager
 
 
 class AppState:
