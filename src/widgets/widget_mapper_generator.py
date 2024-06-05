@@ -1,8 +1,11 @@
 import subprocess
+from pathlib import Path
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit, QComboBox
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
+from PyQt6.QtCore import QRegularExpression
 
+from config.app_state import AppState
 from src.backend.rule_manager import RuleManager
 from src.backend.tile_handler import TileHandler
 from src.dialogs.dialog_check_map import CheckMapDialog
@@ -76,6 +79,16 @@ class MapperGeneratorWidget(QWidget):
         self.generate_button.clicked.connect(self.openFileDialog)
         self.ddnet_push_button.clicked.connect(self.startDDNetCheck)
 
+        # some configuration
+        # configure validator new_mapper_line_edit
+        # this may break entering utf16 characters. Won't fix until somebody breaks it
+        pattern = QRegularExpression(r'^[\w\d-]+$')  # disallow whitespaces and other special characters
+        validator = QRegularExpressionValidator(pattern, self)
+        self.new_mapper_line_edit.setValidator(validator)
+
+        # https://github.com/ddnet/ddnet/blob/c7dc7b6a94528040678b7a0fab17ccb447e1d94d/src/game/editor/auto_map.h#L52
+        self.new_mapper_line_edit.setMaxLength(128)  # limit number of characters
+
     def setImage(self, image_path):
         pixmap = QPixmap(image_path)
         self.image_label.setPixmap(pixmap)
@@ -84,12 +97,15 @@ class MapperGeneratorWidget(QWidget):
         self.image_label.setMaximumSize(200, 200)
 
     def openFileDialog(self):
+        rule_name = self.new_mapper_line_edit.text()
+        if not AppState.imagePath() or not len(rule_name):
+            return
         cmd = CheckMapDialog(self)
         ret = cmd.exec()
         if ret:
-            filename = "placeholder.rules"
-            rule_name = "DummyRule"
-            RuleManager.saveRule(filename, rule_name)
+            loaded_image_path = Path(AppState.imagePath())
+            filename = f"{loaded_image_path.stem}.rules"
+            AppState.ruleManager().saveRule(filename, rule_name)
         """
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",
@@ -101,6 +117,7 @@ class MapperGeneratorWidget(QWidget):
             else:
                 QMessageBox.warning(self, "Warning", "Please select an image first.")
         """
+
     def ruleNameToggle(self):
         if self.radio_buttons[0].isChecked():
             self.existing_mapper.hide()

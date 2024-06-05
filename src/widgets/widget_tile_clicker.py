@@ -6,7 +6,6 @@ from src.widgets.widget_tile import Tile
 
 
 class TileClicker(QWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.gridLayout = QGridLayout()

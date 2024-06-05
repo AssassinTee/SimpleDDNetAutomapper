@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog
 from PyQt6.QtGui import QPixmap
+
+from config.app_state import AppState
 from src.widgets.widget_tile_clicker import TileClicker
 
 
@@ -37,5 +39,6 @@ class ImageSelectorWidget(QWidget):
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
                     self.image_label.setPixmap(pixmap)
-                else:
-                    self.image_label.setText("Invalid image file")
+                    AppState.setImagePath(image_path)
+                # else:
+                #    self.image_label.setText("Invalid image file")
