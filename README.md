@@ -14,8 +14,24 @@ A simple tool to create automapping files for ddnet with a graphical user interf
 
 ## Installation
 
+You may want to put the software in its own directory, since it may generate files.
+
+
+### Windows
+
 This software comes bundled up, just download the version for your OS and start it.
-Note: You may want to put the software in it's own directory, since it may generate files.
+
+### Ubuntu latest:
+This software uses PyQt6, which is maybe missing some dependencies on your OS.
+If you run into issues with this software, install
+```bash
+sudo apt update
+sudo apt-get install -y libegl1
+sudo apt-get install -y libxcb-xinerama0
+sudo apt-get install -y -qq libglu1-mesa-dev libx11-xcb-dev '^libxcb*'
+```
+
+You can find more on this topic [here](https://askubuntu.com/questions/1485442/issue-with-installing-pyqt6-on-ubuntu-22-04)
 
 ## Guide
 
