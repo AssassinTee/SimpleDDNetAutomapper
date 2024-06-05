@@ -48,6 +48,7 @@ jobs:
         run: |
           pyinstaller -F viewer.py
           mv dist/viewer dist/viewer_linux_python_${{ matrix.python-version }}
+          cp -r data dist/data
 
       - name: Test Executable for Linux
         if: matrix.os == 'DISABLED'
@@ -62,6 +63,7 @@ jobs:
         run: |
           pyinstaller -F viewer.py
           mv dist/viewer.exe dist/viewer_win64_python_${{ matrix.python-version }}.exe
+          cp -r data dist/data
 
       - name: Test Executable for Windows
         if: matrix.os == 'windows-latest'
