@@ -1,24 +1,21 @@
 from pathlib import Path
 from typing import List, Dict, Optional
 
-from src.backend.tile_connection import TileConnection
 from src.backend.tile_handler import TileHandler
 from src.backend.tile_status import TileStatus
 from src.config.config_manager import ConfigManager
-from src.globals import NUM_TILES
 from src.widgets.widget_base_tile import BaseTile
 
 RuleConfig = Dict[str, List[str]]
 
 
 class RuleManager:
-    _instance = None
 
     def __init__(self):
-        raise RuntimeError('This is a static class')
+        self._config: Dict[str, List[str]] = {}
+        self._header: List[str] = []
 
-    @staticmethod
-    def _loadRuleFile(filename_base) -> RuleConfig:
+    def _loadRuleFile(self, filename_base):
         filename = f"{filename_base}.rules"
         data_path = Path(ConfigManager.config()["data_path"])
         if not data_path:
@@ -32,15 +29,14 @@ class RuleManager:
 
         # load file if it exists
         if full_file_path.is_file():
-            config = RuleManager._readRuleFile(full_file_path)
+            self._readRuleFile(full_file_path)
 
-        # file doesn't exist
+        # file doesn't exist, just to be explicit
         else:
-            config = {filename_base: []}
-        return config
+            self._config = {}
+            self._header = []
 
-    @staticmethod
-    def saveRule(filename, rule_name):
+    def saveRule(self, filename, rule_name):
 
         # remove mime type and check it if exists
         splits = filename.split(".")
@@ -51,10 +47,10 @@ class RuleManager:
                 raise ValueError(f"Unknown rule mime type '{splits[1]}'")
             filename = splits[0]
 
-        config: RuleConfig = RuleManager._loadRuleFile(filename)
-        config[rule_name] = []  # overwrite rules
-        config[rule_name] = RuleManager._createRulesFromTileHandler()
-        RuleManager._writeRuleFile(filename, config)
+        self._loadRuleFile(filename)
+        self._config[rule_name] = []  # overwrite rules
+        self._config[rule_name] = RuleManager._createRulesFromTileHandler()
+        self._writeRuleFile(filename)
 
     @staticmethod
     def _createRulesFromTileHandler():
@@ -93,20 +89,39 @@ class RuleManager:
         str_rotate = " ROTATE" if tile_status.rot else ""
         return f"{str_index}{str_x_flip}{str_y_flip}{str_rotate}"
 
-    @staticmethod
-    def _writeRuleFile(filename_base, config: RuleConfig):
+    def _writeRuleFile(self, filename_base: str):
+        if len(filename_base) == 0 or filename_base[0] == '/' or filename_base[0] == '\\':
+            raise ValueError(f"the filename '{filename_base}' is invalid")
+
+        # handle file location
         filename = f"{filename_base}.rules"
-        with open(filename, 'w') as f:
-            for key in config.keys():
+        data_path = ConfigManager.config()["data_path"]
+        if not data_path:
+            full_path = filename  # save at root directory
+        else:
+            automap_path = Path(data_path).joinpath(Path("editor/automap"))
+            if not automap_path.exists():
+                automap_path.mkdir()
+            full_path = automap_path.joinpath(filename)
+
+        # write file
+        with open(str(full_path), 'w') as f:
+            # write header, may be a comment
+            if len(self._header):
+                for line in self._header:
+                    f.write(line)
+                    f.write('\n')
+
+            # write rules
+            for key in self._config.keys():
                 f.write(f"[{key}]\n")
-                lines = config[key]
+                lines = self._config[key]
                 for line in lines:
                     f.write(line)
                     f.write('\n')
 
-    @staticmethod
-    def _readRuleFile(full_file_path: Path) -> RuleConfig:
-        config = {}
+    def _readRuleFile(self, full_file_path: Path):
+        self._config = {}
 
         with open(str(full_file_path), 'r', encoding='utf-8') as f:
             section: Optional[str] = None
@@ -118,12 +133,16 @@ class RuleManager:
                 # handle sections
                 if len(line) >= 2 and line[0] == '[' and line[-1] == ']':
                     section = line[1:-1]
-                    config[section] = []
+                    self._config[section] = []
 
                 # handle normal lines
                 else:
                     if section:
-                        config[section].append(line)
-                    elif len(line) > 0:  # ignore empty lines
+                        self._config[section].append(line)
+                    # https://github.com/ddnet/ddnet/blob/c7dc7b6a94528040678b7a0fab17ccb447e1d94d/src/game/editor/auto_map.cpp#L72C2-L72C146
+                    elif len(line) > 0 and line[0] != '#' and line[0] != '\n' and line[0] != '\r' and line[0] != '\t' \
+                            and line[0] != '\v' and line[0] != ' ':
                         raise ValueError("files may contain rules without section, aborting")
-        return config
+                    else:
+                        # starting with a comment or something ignored, read header
+                        self._header.append(line)
