@@ -66,11 +66,11 @@ jobs:
 
       - name: Test Executable for Windows
         if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
-          ./dist/viewer_win64_python${{ matrix.python-version }}.exe &
-          VIEWER_PID=$!
-          sleep 10
-          kill $VIEWER_PID
+          $process = Start-Process -FilePath "dist/viewer_win64_python_${{ matrix.python-version }}.exe" -PassThru
+          Start-Sleep -Seconds 10
+          $process.Kill()
 
       - name: Upload Artifacts
         if: matrix.python-version == '3.11'
