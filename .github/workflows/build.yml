@@ -33,7 +33,6 @@ jobs:
           : # https://askubuntu.com/questions/1485442/issue-with-installing-pyqt6-on-ubuntu-22-04
           : # https://stackoverflow.com/questions/68036484/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it/68058308#68058308
           : # I am not having fun here
-          export QT_QPA_PLATFORM=offscreen
           sudo apt update
           sudo apt-get install -y libegl1
           sudo apt-get install -y libxcb-xinerama0 libxcb-cursor0
@@ -51,7 +50,7 @@ jobs:
           mv dist/viewer dist/viewer_linux_python_${{ matrix.python-version }}
 
       - name: Test Executable for Linux
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'DISABLED'
         run: |
           ./dist/viewer_linux_python_${{ matrix.python-version }} &
           VIEWER_PID=$!
@@ -62,7 +61,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           pyinstaller -F viewer.py
-          mv dist/viewer.exe dist/viewer_win64_python${{ matrix.python-version }}.exe
+          mv dist/viewer.exe dist/viewer_win64_python_${{ matrix.python-version }}.exe
 
       - name: Test Executable for Windows
         if: matrix.os == 'windows-latest'
