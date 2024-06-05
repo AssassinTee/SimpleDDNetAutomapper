@@ -1,5 +1,6 @@
 """
-Class that handles the application state, sometimes you need to grab information from different points in the application
+Class that handles the application state, sometimes you need to grab information from different points in the
+application
 """
 from typing import Optional
 
