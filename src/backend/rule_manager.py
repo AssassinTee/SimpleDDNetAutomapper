@@ -59,14 +59,14 @@ class RuleManager:
     @staticmethod
     def _createRulesFromTileHandler():
         rule_pos_map = {
-            0: "-1 -1",
-            1: "0 -1",
-            2: "1 -1",
-            3: "-1 0",
-            4: "1 0",
-            5: "-1 1",
-            6: "0 1",
-            7: "1 1",
+            0: "1 1",
+            1: "0 1",
+            2: "-1 1",
+            3: "1 0",
+            4: "-1 0",
+            5: "1 -1",
+            6: "0 -1",
+            7: "-1 -1",
         }
 
         rule_list = []
@@ -88,22 +88,9 @@ class RuleManager:
     @staticmethod
     def _createIndexRule(tile_id: int, tile_status: TileStatus):
         str_index = f"Index {tile_id}"
-        num_rotates = tile_status.rot // 90
-        x_flip = tile_status.v_flip
-        y_flip = tile_status.h_flip
-        rotate = num_rotates > 0
-        if num_rotates == 2:
-            x_flip = not x_flip
-            y_flip = not y_flip
-            rotate = False
-        if num_rotates == 3:
-            x_flip = not x_flip
-            y_flip = not y_flip
-            rotate = True
-
-        str_x_flip = " XFLIP" if x_flip else ""
-        str_y_flip = " YFLIP" if y_flip else ""
-        str_rotate = " ROTATE" if rotate else ""
+        str_x_flip = " XFLIP" if tile_status.v_flip else ""
+        str_y_flip = " YFLIP" if tile_status.h_flip else ""
+        str_rotate = " ROTATE" if tile_status.rot else ""
         return f"{str_index}{str_x_flip}{str_y_flip}{str_rotate}"
 
     @staticmethod
