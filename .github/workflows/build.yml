@@ -36,11 +36,27 @@ jobs:
           pyinstaller -F viewer.py
           mv dist/viewer dist/viewer_linux_python_${{ matrix.python-version }}
 
+      - name: Test Executable for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ./dist/viewer_linux_python_${{ matrix.python-version }} &
+          VIEWER_PID=$!
+          sleep 10
+          kill $VIEWER_PID
+
       - name: Build Executable for Windows
         if: matrix.os == 'windows-latest'
         run: |
           pyinstaller -F viewer.py
           mv dist/viewer.exe dist/viewer_win64_python${{ matrix.python-version }}.exe
+
+      - name: Test Executable for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./dist/viewer_win64_python${{ matrix.python-version }}.exe &
+          VIEWER_PID=$!
+          sleep 10
+          kill $VIEWER_PID
 
       - name: Upload Artifacts
         if: matrix.python-version == '3.11'
