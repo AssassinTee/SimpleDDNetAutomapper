@@ -1,0 +1,14 @@
+[run]
+source =
+    src
+    viewer.py
+
+[report]
+# You can add additional reporting configurations here, for example:
+omit =
+    tests/*
+
+[paths]
+source =
+    src
+    .
