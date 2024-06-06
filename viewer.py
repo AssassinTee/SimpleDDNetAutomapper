@@ -53,13 +53,6 @@ class MainWindow(QMainWindow):
         dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
 
-    def load_image(self):
-        file_dialog = QFileDialog(self)
-        image_path, _ = file_dialog.getOpenFileName(self, "Select Image", "", "Image Files (*.png *.jpg *.jpeg *.bmp)")
-        if image_path:
-            pixmap = QPixmap(image_path)
-            self.image_label.setPixmap(pixmap)
-
     def openSettings(self):
         ConfigSettingsDialog(self).exec()
 
