@@ -16,15 +16,13 @@ class Tile(BaseTile):
     def __init__(self, tile_id: int, width=64, height=64) -> None:
         super().__init__(tile_id)
         self.setMaximumSize(width, height)
-
-        self.mousePressEvent = self.openDialog
         self.hovered = False
         self.selected = False
         self.dialog = TileSettingsDialog(self)
         self.alpha = None
         self.setMouseTracking(True)
         self.lock = True  # lock as long as empty
-        self.data_checked = False  # true after checked
+        self.tile_checked: int = 0  # 0 = unchecked, 1 = configured, 2 = removed
         self.image: Optional[QImage] = None
 
     def paintEvent(self,
@@ -49,12 +47,15 @@ class Tile(BaseTile):
                 qp.fillRect(0, 0, self.width() - 1, self.height() - 1, QColor(255, 255, 255, 100))
 
             if self.tile_data:
-                if self.data_checked:
-                    qp.setPen(QPen(QColor(0, 255, 0, 255), 10))
-                    qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "✔️")
-                else:
+                if self.tile_checked == 0:
                     qp.setPen(QPen(QColor(255, 255, 0, 255), 10))
                     qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "?")
+                elif self.tile_checked == 1:
+                    qp.setPen(QPen(QColor(0, 255, 0, 255), 10))
+                    qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "✔️")
+                elif self.tile_checked == 2:
+                    qp.setPen(QPen(QColor(255, 0, 0, 255), 10))
+                    qp.drawText(self.width() - 20, self.height() - 20, 20, 20, Qt.AlignmentFlag.AlignVCenter, "❌")
 
         # draw outline
         pen = QPen(QColor(0, 0, 0, 127), 1)
@@ -62,7 +63,14 @@ class Tile(BaseTile):
         qp.setPen(pen)
         qp.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
-    def openDialog(self, _):
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            self.rightMouseButtonClicked()
+        else:
+            self.leftMouseButtonClicked()
+        super().mousePressEvent(event)
+
+    def leftMouseButtonClicked(self):
         # one does not simply configure locked tiles
         if self.lock:
             return
@@ -81,12 +89,19 @@ class Tile(BaseTile):
         if ret == 1:
             # update tile data in handler
             self.tile_data = self.dialog.getTileData()
-            print(self.tile_data.con)
-            self.data_checked = True
+            self.tile_checked = 1
             TileHandler.instance().updateTileStorage(self)
 
         # mark tile as deselected after dialog
         self.selected = False
+        self.update()
+
+    def rightMouseButtonClicked(self):
+        if self.lock:
+            return
+
+        TileHandler.instance().removeTileFromStorage(self.tile_id)
+        self.tile_checked = 2
         self.update()
 
     def enterEvent(self, event):
