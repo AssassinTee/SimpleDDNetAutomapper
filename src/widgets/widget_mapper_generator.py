@@ -132,4 +132,10 @@ class MapperGeneratorWidget(QWidget):
 
     def rulesLoaded(self):
         rules = AppState.ruleManager().getRules()
-        self.existing_mapper_combobox.addItems(rules)
+        if len(rules):
+            self.existing_mapper_combobox.addItems(rules)
+            self.radio_buttons[1].setEnabled(True)
+        else:  # disable combo box
+            if self.radio_buttons[1].isChecked():
+                self.ruleNameToggle()  # only new is available
+            self.radio_buttons[1].setDisabled(True)
