@@ -1,4 +1,6 @@
 import subprocess
+import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit, QComboBox
@@ -138,15 +140,21 @@ class MapperGeneratorWidget(QWidget):
         # add tmp mapping rule
         # automap map with debroijn torus
         # open map with ddnet
-        map_name = "tmp_map.map"
-        MapGenerator(map_name)
+        date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        map_name = f"map_{date_str}.map"
+
+        temp_dir = Path(tempfile.gettempdir())
+        temp_dir_simple_ddnet = temp_dir.joinpath(Path("simple_ddnet"))
+        temp_dir_simple_ddnet.mkdir(exist_ok=True)
+        file_path = str(temp_dir.joinpath(Path(map_name)))
+        MapGenerator(file_path)
 
         client_path = ConfigManager.instance().config()["client_path"]
         if not client_path:
             self.ddnet_push_button.setDisabled(True)
             return
-        # cmd = [client_path, map_name]
-        # subprocess.Popen(cmd, start_new_session=True)
+        cmd = [client_path, file_path]
+        subprocess.Popen(cmd, start_new_session=True)
 
     def rulesLoaded(self):
         rules = AppState.ruleManager().getRules()

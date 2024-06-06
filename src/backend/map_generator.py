@@ -1,3 +1,5 @@
+import tempfile
+
 import twmap
 import numpy as np
 from src.config.app_state import AppState
@@ -6,7 +8,7 @@ from src.dialogs.dialog_check_map import CheckMapDialog
 
 
 class MapGenerator:
-    def __init__(self, map_name):
+    def __init__(self, file_path):
         self._map = twmap.Map.empty("DDNet06")
 
         solid_map = np.loadtxt("data/debroijn_torus.txt", dtype=np.uint8)
@@ -44,7 +46,7 @@ class MapGenerator:
         tile_layer.tiles = tile_layer_map
 
         # save map
-        self._map.save(map_name)
+        self._map.save(str(file_path))
 
     def __del__(self):
         # TODO delete map
