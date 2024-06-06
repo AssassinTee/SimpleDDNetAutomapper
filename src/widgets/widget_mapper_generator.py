@@ -41,18 +41,13 @@ class MapperGeneratorWidget(QWidget):
         self.existing_mapper = QWidget()
         existing_mapper_layout = QHBoxLayout()
         self.existing_mapper_combobox = QComboBox()
-        self.existing_mapper_combobox.insertItem(0, "TODO")
+        # self.existing_mapper_combobox.insertItem(0, "TODO")
         existing_mapper_layout.addWidget(QLabel("Select Mapping Rule:"))
         existing_mapper_layout.addWidget(self.existing_mapper_combobox)
         self.existing_mapper.setLayout(existing_mapper_layout)
         self.layout.addWidget(self.existing_mapper)
         # hide by default
         self.existing_mapper.hide()
-        # self.select_auto_mapper = QSelect()
-
-        # Placeholder
-        self.image_label = QLabel("No Image")
-        self.layout.addWidget(self.image_label)
 
         # check map
         self.check_map_button = QPushButton("Check mapping rules")
@@ -73,8 +68,6 @@ class MapperGeneratorWidget(QWidget):
         self.layout.addWidget(self.generate_button)
 
         self.setLayout(self.layout)
-        self.image_path = "data/img/grass_main.png"
-        self.setImage(self.image_path)
 
         # handle connections
         for radio_button in self.radio_buttons:
@@ -94,13 +87,6 @@ class MapperGeneratorWidget(QWidget):
         # https://github.com/ddnet/ddnet/blob/c7dc7b6a94528040678b7a0fab17ccb447e1d94d/src/game/editor/auto_map.h#L52
         self.new_mapper_line_edit.setMaxLength(128)  # limit number of characters
 
-    def setImage(self, image_path):
-        pixmap = QPixmap(image_path)
-        self.image_label.setPixmap(pixmap)
-        self.image_path = image_path
-        self.image_label.setScaledContents(True)
-        self.image_label.setMaximumSize(200, 200)
-
     def startRuleGeneration(self):
         rule_name = self.new_mapper_line_edit.text()
         if not AppState.imagePath() or not len(rule_name):
@@ -111,17 +97,7 @@ class MapperGeneratorWidget(QWidget):
             loaded_image_path = Path(AppState.imagePath())
             filename = f"{loaded_image_path.stem}.rules"
             AppState.ruleManager().saveRule(filename, rule_name)
-        """
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "All Files (*);;Text Files (*.txt)",
-                                                   options=options)
-        if file_path:
-            if self.image_path:
-                # Save the image to the specified file path
-                QMessageBox.information(self, "Success", "Image and file saved successfully!")
-            else:
-                QMessageBox.warning(self, "Warning", "Please select an image first.")
-        """
+
     def checkMappingRules(self):
         cmd = CheckMapDialog(self, title="Check Mapping Rules", cancel=False)
         cmd.exec()
