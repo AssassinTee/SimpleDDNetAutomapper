@@ -115,3 +115,6 @@ class TileHandler:
         if neighborhood < 0 or neighborhood >= 2**8:
             raise ValueError("only use 8 bit neighbourhood to find tiles by neighborhood")
         return self.neighborhood_map[neighborhood]
+
+    def reset(self):
+        self._init()

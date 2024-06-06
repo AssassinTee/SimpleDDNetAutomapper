@@ -9,6 +9,7 @@ class ConfigurationClickedEmitter(QObject):
 
 class ApplicationStatusEnum(Enum):
     IMAGE_LOADED = "ImageLoaded"
+    RESET_APP = "ResetApp"
     WARNING = "Warning"
     INFO = "Info"
 

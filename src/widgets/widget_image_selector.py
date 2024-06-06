@@ -37,8 +37,15 @@ class ImageSelectorWidget(QWidget):
             if selected_files:
                 image_path = selected_files[0]
                 pixmap = QPixmap(image_path)
+                if AppState.imagePath():
+                    AppState.reset()  # reset app before loading new, calls self.reset somewhere
                 if not pixmap.isNull():
                     self.image_label.setPixmap(pixmap)
                     AppState.setImagePath(image_path)
                 # else:
                 #    self.image_label.setText("Invalid image file")
+
+    def reset(self):
+        self.layout().removeWidget(self.image_label)
+        self.image_label = TileClicker(self)
+        self.layout().addWidget(self.image_label)

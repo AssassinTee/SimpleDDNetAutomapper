@@ -9,6 +9,10 @@ from src.dockwidgets.dockwidget_mapper_generator import MapperGeneratorDockwidge
 from src.widgets.widget_image_selector import ImageSelectorWidget
 from src.config.app_state import AppState
 from src.signals.signal_emitter import ApplicationStatusEnum
+from src.backend.tile_handler import TileHandler
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
@@ -63,8 +67,13 @@ class MainWindow(QMainWindow):
         QMessageBox.about(self, 'About', 'This is a PyQt6 menu example.')
 
     def statusUpdateReceived(self, status_type: ApplicationStatusEnum, message: str):
+        logger.debug(f"Status update received: {status_type}, {message}")
         if status_type == ApplicationStatusEnum.IMAGE_LOADED:
             self.mapper_generator.setEnabled(True)
             self.mapper_generator.widget().rulesLoaded()
             # TODO set status dockwidget "Successfully loaded image"
+        elif status_type == ApplicationStatusEnum.RESET_APP:
+            self.mapper_generator.widget().reset()
+            self.central_widget.reset()
+            TileHandler.instance().reset()
         pass

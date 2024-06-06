@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLa
 from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
 from PyQt6.QtCore import QRegularExpression
 
-from src.config.app_state import AppState
+from src.config.app_state import AppState, ApplicationStatusEnum
 from src.dialogs.dialog_check_map import CheckMapDialog
 from src.config.config_manager import ConfigManager
 
@@ -87,8 +87,13 @@ class MapperGeneratorWidget(QWidget):
         self.new_mapper_line_edit.setMaxLength(128)  # limit number of characters
 
     def startRuleGeneration(self):
-        rule_name = self.new_mapper_line_edit.text()
-        if not AppState.imagePath() or not len(rule_name):
+        if self.radio_buttons[0].isChecked():
+            rule_name = self.new_mapper_line_edit.text()
+        else:
+            rule_name = self.existing_mapper_combobox.currentText()
+
+        if not AppState.imagePath() or not rule_name or not len(rule_name):
+            AppState.setStatus(ApplicationStatusEnum.WARNING, "You can't generate without a rule name")
             return
         cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?", cancel=True)
         ret = cmd.exec()
@@ -102,11 +107,20 @@ class MapperGeneratorWidget(QWidget):
         cmd.exec()
 
     def mappingRuleNameChanged(self):
-        rule_name = self.new_mapper_line_edit.text()
-        if not rule_name or len(rule_name) == 0:
-            self.generate_button.setDisabled(True)
+        self._updateGenerateButton()
+
+    def _updateGenerateButton(self):
+        if self.radio_buttons[0].isChecked():
+            rule_name = self.new_mapper_line_edit.text()
+            if not rule_name or len(rule_name) == 0:
+                self.generate_button.setDisabled(True)
+            else:
+                self.generate_button.setEnabled(True)
         else:
-            self.generate_button.setEnabled(True)
+            if not self.existing_mapper_combobox.count():
+                self.generate_button.setDisabled(True)
+            else:
+                self.generate_button.setEnabled(True)
 
     def ruleNameToggle(self):
         if self.radio_buttons[0].isChecked():
@@ -115,6 +129,7 @@ class MapperGeneratorWidget(QWidget):
         elif self.radio_buttons[1].isChecked():
             self.new_mapper.hide()
             self.existing_mapper.show()
+        self._updateGenerateButton()
 
     def startDDNetCheck(self):
         # TODO
@@ -137,5 +152,12 @@ class MapperGeneratorWidget(QWidget):
             self.radio_buttons[1].setEnabled(True)
         else:  # disable combo box
             if self.radio_buttons[1].isChecked():
-                self.ruleNameToggle()  # only new is available
+                self.radio_buttons[0].click()
             self.radio_buttons[1].setDisabled(True)
+        self._updateGenerateButton()
+
+    def reset(self):
+        if self.radio_buttons[1].isChecked():
+            self.ruleNameToggle()
+        self.new_mapper_line_edit.setText("")
+        self.existing_mapper_combobox.clear()

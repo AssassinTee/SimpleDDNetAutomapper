@@ -58,15 +58,13 @@ class RuleManager:
         return list(self._config.keys())
 
     @staticmethod
-    def _getFileBase(filename):
-        # remove mime type and check it if exists
+    def _getFileBase(filename: str):
+        # remove .rules mime type
+        if filename.startswith("."):
+            raise ValueError("rules are not allowed to start with .")
         splits = filename.split(".")
-        if len(splits) > 2:
-            raise ValueError("The name must have format <rule> or <rule>.rules")
-        if len(splits) == 2:
-            if splits[1] != "rules":
-                raise ValueError(f"Unknown rule mime type '{splits[1]}'")
-            filename = splits[0]
+        if len(splits) >= 2 and splits[-1] == "rules":
+            filename = ".".join(splits[0:-1])
         return filename
 
     @staticmethod

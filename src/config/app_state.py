@@ -44,6 +44,13 @@ class AppState:
         cls.instance().signal_emitter.application_status_signal.emit(ApplicationStatusEnum.IMAGE_LOADED, "")
 
     @classmethod
+    def reset(cls):
+        # do not call _init here, don't overwrite the signal emitter, reset manually
+        cls.instance().rule_manager: RuleManager = RuleManager()
+        cls.instance().main_image_path: Optional[str] = None
+        cls.instance().signal_emitter.application_status_signal.emit(ApplicationStatusEnum.RESET_APP, "")
+
+    @classmethod
     def setStatus(cls, status_type: ApplicationStatusEnum, message: str):
         if status_type == ApplicationStatusEnum.IMAGE_LOADED:
             raise ValueError(f"Application status {status_type} is not allowed for messaging")
