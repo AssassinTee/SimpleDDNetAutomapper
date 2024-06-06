@@ -27,7 +27,8 @@ class ConfigSettingsDialog(QDialog):
             q_label = QLabel(label)
             self.layout.addWidget(q_label, index, 0)
             self.layout.addWidget(config_button, index, 1)
-            config_button.clicked.connect(lambda: self.browseSetting(config, q_label, config_button, filemode))
+            handler = self.createBrowseSettingHandler(config, q_label.text(), config_button, filemode)
+            config_button.clicked.connect(handler)
 
         q_btn = QDialogButtonBox.StandardButton.Ok
 
@@ -38,7 +39,13 @@ class ConfigSettingsDialog(QDialog):
 
         self.setModal(True)
 
-    def browseSetting(self, setting: str, q_label: QLabel, config_button: QPushButton, filemode: QFileDialog.FileMode):
+    def createBrowseSettingHandler(self, setting: str, text: str, config_button: QPushButton,
+                                   filemode: QFileDialog.FileMode):
+        def handler():
+            self.browseSetting(setting, text, config_button, filemode)
+        return handler
+
+    def browseSetting(self, setting: str, text: str, config_button: QPushButton, filemode: QFileDialog.FileMode):
         value = ConfigManager.config()[setting]
         if not value:
             directory = os.getcwd()
@@ -46,9 +53,12 @@ class ConfigSettingsDialog(QDialog):
             directory = Path(value).parent if Path(value).is_file() else (
                 value if Path(value).is_dir() else os.getcwd())
 
-        dialog = QFileDialog(self)
+        dialog = QFileDialog(self, caption=text)
         dialog.setFileMode(filemode)
-        path, _ = dialog.getOpenFileName(self, q_label.text(), str(directory))
-        if path:
-            ConfigManager.setConfig(setting, path)
-            config_button.setText(path)
+        dialog.setDirectory(str(directory))
+        if dialog.exec():
+            paths = dialog.selectedFiles()
+            if paths:
+                path = paths[0]
+                ConfigManager.setConfig(setting, path)
+                config_button.setText(path)
