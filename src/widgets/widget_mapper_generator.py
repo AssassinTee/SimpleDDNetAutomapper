@@ -54,8 +54,12 @@ class MapperGeneratorWidget(QWidget):
         self.image_label = QLabel("No Image")
         self.layout.addWidget(self.image_label)
 
-        # check ddnet
-        self.ddnet_push_button = QPushButton("Check with ddnet")
+        # check map
+        self.check_map_button = QPushButton("Check mapping rules")
+        self.layout.addWidget(self.check_map_button)
+
+        # check map with ddnet
+        self.ddnet_push_button = QPushButton("Check mapping rules with ddnet")
         self.layout.addWidget(self.ddnet_push_button)
         if ConfigManager.instance().config()["client_path"] is None:
             self.ddnet_push_button.setDisabled(True)
@@ -65,6 +69,7 @@ class MapperGeneratorWidget(QWidget):
 
         # Generate button
         self.generate_button = QPushButton("Generate")
+        self.generate_button.setEnabled(False)  # no rule name yet
         self.layout.addWidget(self.generate_button)
 
         self.setLayout(self.layout)
@@ -74,8 +79,10 @@ class MapperGeneratorWidget(QWidget):
         # handle connections
         for radio_button in self.radio_buttons:
             radio_button.toggled.connect(self.ruleNameToggle)
-        self.generate_button.clicked.connect(self.openFileDialog)
+        self.generate_button.clicked.connect(self.startRuleGeneration)
         self.ddnet_push_button.clicked.connect(self.startDDNetCheck)
+        self.check_map_button.clicked.connect(self.checkMappingRules)
+        self.new_mapper_line_edit.textChanged.connect(self.mappingRuleNameChanged)
 
         # some configuration
         # configure validator new_mapper_line_edit
@@ -94,11 +101,11 @@ class MapperGeneratorWidget(QWidget):
         self.image_label.setScaledContents(True)
         self.image_label.setMaximumSize(200, 200)
 
-    def openFileDialog(self):
+    def startRuleGeneration(self):
         rule_name = self.new_mapper_line_edit.text()
         if not AppState.imagePath() or not len(rule_name):
             return
-        cmd = CheckMapDialog(self)
+        cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?", cancel=True)
         ret = cmd.exec()
         if ret:
             loaded_image_path = Path(AppState.imagePath())
@@ -115,6 +122,16 @@ class MapperGeneratorWidget(QWidget):
             else:
                 QMessageBox.warning(self, "Warning", "Please select an image first.")
         """
+    def checkMappingRules(self):
+        cmd = CheckMapDialog(self, title="Check Mapping Rules", cancel=False)
+        cmd.exec()
+
+    def mappingRuleNameChanged(self):
+        rule_name = self.new_mapper_line_edit.text()
+        if not rule_name or len(rule_name) == 0:
+            self.generate_button.setDisabled(True)
+        else:
+            self.generate_button.setEnabled(True)
 
     def ruleNameToggle(self):
         if self.radio_buttons[0].isChecked():

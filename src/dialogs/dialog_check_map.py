@@ -14,10 +14,10 @@ from src.widgets.widget_base_tile import BaseTile
 
 
 class CheckMapDialog(QDialog):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, title, cancel, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
-        self.setWindowTitle("Check tile configurations")
+        self.setWindowTitle(title)
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(0)
         self.layout.setVerticalSpacing(0)
@@ -58,11 +58,15 @@ class CheckMapDialog(QDialog):
                 self.layout.addWidget(tile, grid_y, grid_x, 1, 1)
 
         # add ok and cancel button
-        q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        if cancel:
+            q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        else:
+            q_btn = QDialogButtonBox.StandardButton.Ok
 
         self.buttonBox = QDialogButtonBox(q_btn)
         self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        if cancel:
+            self.buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(self.buttonBox, height + 2, 0, 1, width, Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(self.layout)
         self.setModal(True)
