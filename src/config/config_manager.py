@@ -22,6 +22,24 @@ class ConfigManager:
         if not Path(self.config_path).is_file():
             raise RuntimeError('Could not create config.yml')
         self._config = yaml.safe_load(open(self.config_path))
+        self._checkConfig()
+
+    def _checkConfig(self) -> bool:
+        updated = False
+        if self._config["data_path"]:
+            data_path = Path(self._config["data_path"])
+            if not data_path.is_dir():
+                self._config["data_path"] = None
+                updated = True
+        if self._config["client_path"]:
+            client_path = Path(self._config["client_path"])
+            if not client_path.is_file():
+                self._config["client_path"] = None
+                updated = True
+
+        if updated:
+            self.writeConfig()
+        return updated
 
     def createConfig(self):
         client_path = StorageFinder.instance().getClientPath()
@@ -53,4 +71,5 @@ class ConfigManager:
         if setting not in cls.instance()._config.keys():
             raise ValueError(f"Unknown setting '{setting}'")
         cls.instance()._config[setting] = value
-        cls.instance().writeConfig()
+        if not cls.instance()._checkConfig():
+            cls.instance().writeConfig()  # make sure the config gets written
