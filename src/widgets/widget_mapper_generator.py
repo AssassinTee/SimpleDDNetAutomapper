@@ -11,7 +11,6 @@ from src.config.config_manager import ConfigManager
 
 
 class MapperGeneratorWidget(QWidget):
-    # noinspection PyUnresolvedReferences
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -130,3 +129,7 @@ class MapperGeneratorWidget(QWidget):
             return
         cmd = [client_path, map_name]
         subprocess.Popen(cmd, start_new_session=True)
+
+    def rulesLoaded(self):
+        rules = AppState.ruleManager().getRules()
+        self.existing_mapper_combobox.addItems(rules)

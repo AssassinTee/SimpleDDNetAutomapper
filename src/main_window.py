@@ -65,5 +65,6 @@ class MainWindow(QMainWindow):
     def statusUpdateReceived(self, status_type: ApplicationStatusEnum, message: str):
         if status_type == ApplicationStatusEnum.IMAGE_LOADED:
             self.mapper_generator.setEnabled(True)
+            self.mapper_generator.widget().rulesLoaded()
             # TODO set status dockwidget "Successfully loaded image"
         pass

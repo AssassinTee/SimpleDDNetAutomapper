@@ -14,30 +14,51 @@ class RuleManager:
     def __init__(self):
         self._config: Dict[str, List[str]] = {}
         self._header: List[str] = []
+        self._loadedRules = False
 
     def _loadRuleFile(self, filename_base):
-        filename = f"{filename_base}.rules"
-        data_path = Path(ConfigManager.config()["data_path"])
-        if not data_path:
-            raise ValueError("No editor directory path known")
+        if not self._loadedRules:
+            filename = f"{filename_base}.rules"
+            data_path = Path(ConfigManager.config()["data_path"])
+            if not data_path:
+                raise ValueError("No editor directory path known")
 
-        automapper_path = data_path.joinpath(Path("editor/automap"))
-        if not automapper_path.exists():
-            automapper_path.mkdir()
+            automapper_path = data_path.joinpath(Path("editor/automap"))
+            if not automapper_path.exists():
+                automapper_path.mkdir()
 
-        full_file_path = automapper_path.joinpath(Path(filename))
+            full_file_path = automapper_path.joinpath(Path(filename))
 
-        # load file if it exists
-        if full_file_path.is_file():
-            self._readRuleFile(full_file_path)
+            # load file if it exists
+            if full_file_path.is_file():
+                self._readRuleFile(full_file_path)
 
-        # file doesn't exist, just to be explicit
-        else:
-            self._config = {}
-            self._header = []
+            # file doesn't exist, just to be explicit
+            else:
+                self._config = {}
+                self._header = []
+            self._loadedRules = True
+
+    def loadRules(self, filename):
+        if not self._loadedRules:
+            filename = RuleManager._getFileBase(filename)
+            self._loadRuleFile(filename)
 
     def saveRule(self, filename, rule_name):
+        filename = RuleManager._getFileBase(filename)
+        if not self._loadedRules:
+            self._loadRuleFile(filename)
+        self._config[rule_name] = []  # overwrite rules
+        self._config[rule_name] = RuleManager._createRulesFromTileHandler()
+        self._writeRuleFile(filename)
 
+    def getRules(self) -> List[str]:
+        if not self._loadedRules:
+            raise ValueError("Rules are not loaded yet")
+        return list(self._config.keys())
+
+    @staticmethod
+    def _getFileBase(filename):
         # remove mime type and check it if exists
         splits = filename.split(".")
         if len(splits) > 2:
@@ -46,11 +67,7 @@ class RuleManager:
             if splits[1] != "rules":
                 raise ValueError(f"Unknown rule mime type '{splits[1]}'")
             filename = splits[0]
-
-        self._loadRuleFile(filename)
-        self._config[rule_name] = []  # overwrite rules
-        self._config[rule_name] = RuleManager._createRulesFromTileHandler()
-        self._writeRuleFile(filename)
+        return filename
 
     @staticmethod
     def _createRulesFromTileHandler():

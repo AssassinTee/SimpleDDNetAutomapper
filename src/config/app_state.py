@@ -8,6 +8,7 @@ from PyQt6.QtGui import QPixmap
 
 from src.backend.rule_manager import RuleManager
 from src.signals.signal_emitter import ApplicationStatusEmitter, ApplicationStatusEnum
+from pathlib import Path
 
 
 class AppState:
@@ -39,6 +40,7 @@ class AppState:
     @classmethod
     def setImagePath(cls, image_path):
         cls.instance().main_image_path = image_path
+        cls.instance().rule_manager.loadRules(Path(image_path).stem)
         cls.instance().signal_emitter.application_status_signal.emit(ApplicationStatusEnum.IMAGE_LOADED, "")
 
     @classmethod
