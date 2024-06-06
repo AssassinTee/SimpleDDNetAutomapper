@@ -145,8 +145,8 @@ class MapperGeneratorWidget(QWidget):
         if not client_path:
             self.ddnet_push_button.setDisabled(True)
             return
-        #cmd = [client_path, map_name]
-        #subprocess.Popen(cmd, start_new_session=True)
+        # cmd = [client_path, map_name]
+        # subprocess.Popen(cmd, start_new_session=True)
 
     def rulesLoaded(self):
         rules = AppState.ruleManager().getRules()
