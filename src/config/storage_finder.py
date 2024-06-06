@@ -88,7 +88,7 @@ class StorageFinder(StorageFinderBase):
         if self.client_path:
             return Path(self.client_path)
         else:
-            self._findClient()
+            self._findClient(self.data_path, sys.platform)
             if self.client_path:  # don't recurse here
                 return Path(self.client_path)
         return None
