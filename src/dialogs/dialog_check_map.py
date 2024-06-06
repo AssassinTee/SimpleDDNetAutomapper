@@ -23,7 +23,7 @@ class CheckMapDialog(QDialog):
         self.layout.setVerticalSpacing(0)
 
         # load torus
-        solid_map = np.loadtxt("data/debroijn_torus.txt", dtype=np.int8)
+        solid_map = np.loadtxt("data/debroijn_torus.txt", dtype=np.uint8)
         height, width = solid_map.shape
 
         # add stretch in front and after map for central alignment
@@ -45,7 +45,7 @@ class CheckMapDialog(QDialog):
                 grid_y = map_y + 1
                 grid_x = map_x + 1
 
-                tile, status = CheckMapDialog._getMapTile(solid_map, map_x, map_y)
+                tile, status = CheckMapDialog.getMapTile(solid_map, map_x, map_y)
                 if not tile:
                     tile = BaseTile(-1)  # Empty tile
                     if solid_map[map_y, map_x] == 0:
@@ -98,7 +98,7 @@ class CheckMapDialog(QDialog):
         return neighbors
 
     @staticmethod
-    def _getMapTile(solid_map: np.ndarray, x, y) -> Tuple[Optional[BaseTile], Optional[TileStatus]]:
+    def getMapTile(solid_map: np.ndarray, x, y) -> Tuple[Optional[BaseTile], Optional[TileStatus]]:
         if solid_map[y, x] == 0:
             return None, None  # TODO this isn't true
         neighbors = CheckMapDialog._getMapNeighborhood(solid_map, x, y)

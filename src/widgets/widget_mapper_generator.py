@@ -8,6 +8,7 @@ from PyQt6.QtCore import QRegularExpression
 from src.config.app_state import AppState, ApplicationStatusEnum
 from src.dialogs.dialog_check_map import CheckMapDialog
 from src.config.config_manager import ConfigManager
+from src.backend.map_generator import MapGenerator
 
 
 class MapperGeneratorWidget(QWidget):
@@ -137,13 +138,15 @@ class MapperGeneratorWidget(QWidget):
         # add tmp mapping rule
         # automap map with debroijn torus
         # open map with ddnet
-        map_name = ""
+        map_name = "tmp_map.map"
+        MapGenerator(map_name)
+
         client_path = ConfigManager.instance().config()["client_path"]
         if not client_path:
             self.ddnet_push_button.setDisabled(True)
             return
-        cmd = [client_path, map_name]
-        subprocess.Popen(cmd, start_new_session=True)
+        #cmd = [client_path, map_name]
+        #subprocess.Popen(cmd, start_new_session=True)
 
     def rulesLoaded(self):
         rules = AppState.ruleManager().getRules()
