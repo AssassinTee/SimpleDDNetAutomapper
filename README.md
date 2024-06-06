@@ -1,3 +1,8 @@
+[![Build](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/build.yml/badge.svg)](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/build.yml)
+[![Tests](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/test.yml/badge.svg)](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/test.yml)
+[![Lint](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/lint.yml/badge.svg)](https://github.com/AssassinTee/SimpleDDNetAutomapper/actions/workflows/lint.yml)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/AssassinTee/SimpleDDNetAutomapper/issues)
+
 # NOTE
 WIP (work in progress). This tool isn't ready yet to be announced to the public, but it 
 reached the alpha stage. If you encounter bugs or experience crashes, please don't report them yet as this software
