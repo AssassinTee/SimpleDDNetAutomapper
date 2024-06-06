@@ -7,6 +7,7 @@ from typing import Optional
 from PyQt6.QtGui import QPixmap
 
 from src.backend.rule_manager import RuleManager
+from src.signals.signal_emitter import ApplicationStatusEmitter, ApplicationStatusEnum
 
 
 class AppState:
@@ -18,6 +19,7 @@ class AppState:
     def _init(self):
         self.rule_manager: RuleManager = RuleManager()
         self.main_image_path: Optional[str] = None
+        self.signal_emitter = ApplicationStatusEmitter()
 
     @classmethod
     def instance(cls):
@@ -37,3 +39,10 @@ class AppState:
     @classmethod
     def setImagePath(cls, image_path):
         cls.instance().main_image_path = image_path
+        cls.instance().signal_emitter.application_status_signal.emit(ApplicationStatusEnum.IMAGE_LOADED, "")
+
+    @classmethod
+    def setStatus(cls, status_type: ApplicationStatusEnum, message: str):
+        if status_type == ApplicationStatusEnum.IMAGE_LOADED:
+            raise ValueError(f"Application status {status_type} is not allowed for messaging")
+        cls.instance().signal_emitter.application_status_signal.emit(status_type, message)
