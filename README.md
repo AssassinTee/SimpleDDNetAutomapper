@@ -42,10 +42,19 @@ You can find more on this topic [here](https://askubuntu.com/questions/1485442/i
 
 TODO: Do a proper guide, guide below is just for a minimal product
 
+0. Go to `Settings` and configure ddnet and your `data` directory (usually in side the ddnet directory) properly
 1. Load mapres image, like `grass_main.png` by clicking `Select Image`
-2. Configure Tiles you want to use for your automapper
-    - select FULL/EMPTY/ANY, TODO explain what this means
+2. Configure all tiles you want to use for your automapper
+    - select FULL/EMPTY/ANY
+      - FULL: This neighbor of the (middle) tile is FULL, not EMPTY
+      - EMPTY: This neighbor of the (middle) tile is EMPTY, not FULL
+      - ANY: This neighbor of the (middle)tile is EMPTY or FULL
     - select rotation/hflip/vflip, don't use empty yet
+      - rotation: This (middle) tile can be rotated
+      - hflip: This (middle) tile can be flipped horizontally (on the X axis)
+      - vflip: This (middle) tile can be flipped vertically (on the Y axis)
+      - empty: Not yet ready for usuage, FUTURE: Allows (middle) tile to be EMPTY
+    - remove a configured tile with right click
 3. Name your rule (top right, `Name Mapping Rule`)
 4. Press `Generate`, this will test your mapping rules, press `Ok` and your mapping rules will automatically be saved
 in the data directory
