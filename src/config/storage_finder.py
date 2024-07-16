@@ -3,9 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List
-import logging
-
-logger = logging.getLogger(__name__)
+from src.logger import logger
 
 
 class StorageFinderBase(ABC):
@@ -121,7 +119,7 @@ class StorageFinder(StorageFinderBase):
     def _findClient(data_path, os_name):
         if data_path:
             pattern = "ddnet.exe" if os_name in ["win32", "cygwin"] else "ddnet*"
-            for p in Path(data_path).parent.glob(pattern, case_sensitive=False):
+            for p in Path(data_path).parent.glob(pattern):
                 if p.is_file():
                     return p
         return None

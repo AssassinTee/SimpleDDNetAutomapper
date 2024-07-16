@@ -5,6 +5,7 @@ from src.backend.tile_handler import TileHandler
 from src.backend.tile_status import TileStatus
 from src.config.config_manager import ConfigManager
 from src.widgets.widget_base_tile import BaseTile
+from src.logger import BroadErrorHandler
 
 RuleConfig = Dict[str, List[str]]
 
@@ -39,11 +40,13 @@ class RuleManager:
                 self._header = []
             self._loadedRules = True
 
+    @BroadErrorHandler
     def loadRules(self, filename):
         if not self._loadedRules:
             filename = RuleManager._getFileBase(filename)
             self._loadRuleFile(filename)
 
+    @BroadErrorHandler
     def saveRule(self, filename, rule_name):
         filename = RuleManager._getFileBase(filename)
         if not self._loadedRules:

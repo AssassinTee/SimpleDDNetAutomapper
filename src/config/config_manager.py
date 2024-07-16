@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -42,8 +43,16 @@ class ConfigManager:
         return updated
 
     def createConfig(self):
-        client_path = StorageFinder.instance().getClientPath()
-        data_path = StorageFinder.instance().getDataPath()
+        client_path = ""
+        data_path = ""
+        # noinspection PyBroadException
+        try:
+            client_path = StorageFinder.instance().getClientPath()
+            data_path = StorageFinder.instance().getDataPath()
+        except Exception as e:
+            logging.error("An error occured while creating the config")
+            logging.error(str(e))
+
         data = {
             'version': "1.0.0",
             'client_path': str(client_path),
