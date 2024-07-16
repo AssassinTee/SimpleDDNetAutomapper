@@ -25,3 +25,6 @@ config.yml
 *.rules
 *.rule
 .coverage
+*.bac
+*.log
+*.map
