@@ -3,7 +3,8 @@ import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List
-from src.logger import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class StorageFinderBase(ABC):
