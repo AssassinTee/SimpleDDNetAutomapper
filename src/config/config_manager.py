@@ -43,8 +43,8 @@ class ConfigManager:
         return updated
 
     def createConfig(self):
-        client_path = ""
-        data_path = ""
+        client_path = None
+        data_path = None
         # noinspection PyBroadException
         try:
             client_path = StorageFinder.instance().getClientPath()

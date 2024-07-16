@@ -6,7 +6,8 @@ from src.backend.tile_status import TileStatus
 from src.config.config_manager import ConfigManager
 from src.widgets.widget_base_tile import BaseTile
 from src.logger import BroadErrorHandler
-
+import logging
+logger = logging.getLogger(__name__)
 RuleConfig = Dict[str, List[str]]
 
 
@@ -20,9 +21,10 @@ class RuleManager:
     def _loadRuleFile(self, filename_base):
         if not self._loadedRules:
             filename = f"{filename_base}.rules"
-            data_path = Path(ConfigManager.config()["data_path"])
+            data_path = ConfigManager.config()["data_path"]
             if not data_path:
                 raise ValueError("No editor directory path known")
+            data_path = Path(data_path)
 
             automapper_path = data_path.joinpath(Path("editor/automap"))
             if not automapper_path.exists():
@@ -40,13 +42,17 @@ class RuleManager:
                 self._header = []
             self._loadedRules = True
 
-    @BroadErrorHandler
+    @BroadErrorHandler(logger)
     def loadRules(self, filename):
         if not self._loadedRules:
             filename = RuleManager._getFileBase(filename)
-            self._loadRuleFile(filename)
+            try:
+                self._loadRuleFile(filename)
+            except ValueError:
+                return False
+            return True
 
-    @BroadErrorHandler
+    @BroadErrorHandler(logger)
     def saveRule(self, filename, rule_name):
         filename = RuleManager._getFileBase(filename)
         if not self._loadedRules:
@@ -57,7 +63,7 @@ class RuleManager:
 
     def getRules(self) -> List[str]:
         if not self._loadedRules:
-            raise ValueError("Rules are not loaded yet")
+            return []
         return list(self._config.keys())
 
     @staticmethod

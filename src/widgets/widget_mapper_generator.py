@@ -12,6 +12,8 @@ from src.dialogs.dialog_check_map import CheckMapDialog
 from src.config.config_manager import ConfigManager
 from src.backend.map_generator import MapGenerator
 from src.logger import BroadErrorHandler
+import logging
+logger = logging.getLogger(__name__)
 
 
 class MapperGeneratorWidget(QWidget):
@@ -135,7 +137,7 @@ class MapperGeneratorWidget(QWidget):
             self.existing_mapper.show()
         self._updateGenerateButton()
 
-    @BroadErrorHandler
+    @BroadErrorHandler(logger)
     def startDDNetCheck(self):
         # TODO
         # generate Map
