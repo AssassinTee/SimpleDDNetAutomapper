@@ -2,9 +2,8 @@ import os
 from pathlib import Path
 
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QGridLayout, QLabel, QFileDialog, QPushButton
+from PyQt6.QtWidgets import QGridLayout, QLabel, QFileDialog, QPushButton, QDialog, QDialogButtonBox
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QDialog, QDialogButtonBox
 
 from src.config.config_manager import ConfigManager
 
@@ -23,7 +22,7 @@ class ConfigSettingsDialog(QDialog):
         index = 0
         for index, (config, label, filemode) in enumerate(configs):
             client_path = ConfigManager.config()[config]
-            config_button = QPushButton(client_path, parent=self)
+            config_button = QPushButton(client_path)
             q_label = QLabel(label)
             self.layout.addWidget(q_label, index, 0)
             self.layout.addWidget(config_button, index, 1)
