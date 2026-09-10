@@ -56,8 +56,10 @@ class MapperGeneratorWidget(QWidget):
         self.existing_mapper.hide()
 
         # check map
-        self.check_map_button = QPushButton("Check mapping rules")
-        self.layout.addWidget(self.check_map_button)
+        self.check_map_button_easy = QPushButton("Check minimal mapping rules")
+        self.layout.addWidget(self.check_map_button_easy)
+        self.check_map_button_advanced = QPushButton("Check full mapping rules")
+        self.layout.addWidget(self.check_map_button_advanced)
 
         # check map with ddnet
         self.ddnet_push_button = QPushButton("Check mapping rules with ddnet")
@@ -79,7 +81,8 @@ class MapperGeneratorWidget(QWidget):
             radio_button.toggled.connect(self.ruleNameToggle)
         self.generate_button.clicked.connect(self.startRuleGeneration)
         self.ddnet_push_button.clicked.connect(self.startDDNetCheck)
-        self.check_map_button.clicked.connect(self.checkMappingRules)
+        self.check_map_button_easy.clicked.connect(self.checkMappingRulesEasy)
+        self.check_map_button_advanced.clicked.connect(self.checkMappingRulesAdvanced)
         self.new_mapper_line_edit.textChanged.connect(self.mappingRuleNameChanged)
 
         # some configuration
@@ -108,15 +111,19 @@ class MapperGeneratorWidget(QWidget):
             AppState.setStatus(ApplicationStatusEnum.WARNING,
                                "No ddnet data directory configured, cannot save rule. Set it in Settings.")
             return
-        cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?", cancel=True)
+        cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?", cancel=True, map_file="data/debroijn_torus.txt")
         ret = cmd.exec()
         if ret:
             loaded_image_path = AppState.imagePath()
             filename = f"{loaded_image_path.stem}.rules"
             AppState.ruleManager().saveRule(filename, rule_name)
 
-    def checkMappingRules(self):
-        cmd = CheckMapDialog(self, title="Check Mapping Rules", cancel=False)
+    def checkMappingRulesAdvanced(self):
+        cmd = CheckMapDialog(self, title="Check Full Mapping Rules", cancel=False, map_file="data/debroijn_torus.txt")
+        cmd.exec()
+    
+    def checkMappingRulesEasy(self):
+        cmd = CheckMapDialog(self, title="Check Minimal Mapping Rules", cancel=False, map_file="data/minimal.txt")
         cmd.exec()
 
     def mappingRuleNameChanged(self):

@@ -14,7 +14,7 @@ from src.widgets.widget_base_tile import BaseTile
 
 
 class CheckMapDialog(QDialog):
-    def __init__(self, parent, title, cancel, *args, **kwargs):
+    def __init__(self, parent, title, cancel, map_file, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.setWindowTitle(title)
@@ -23,7 +23,7 @@ class CheckMapDialog(QDialog):
         self.layout.setVerticalSpacing(0)
 
         # load torus
-        solid_map = np.loadtxt("data/debroijn_torus.txt", dtype=np.uint8)
+        solid_map = np.loadtxt(map_file, dtype=np.uint8)
         height, width = solid_map.shape
 
         # add stretch in front and after map for central alignment
