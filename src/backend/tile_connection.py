@@ -1,6 +1,14 @@
 from src.globals import EIGHT_NEIGHBORS, NUM_NEIGHBOR_BITS, NUM_NEIGHBOR_STATES, NEIGHBOR_BIT_COMPARATOR
 from typing import List, Set
 
+# relative (x, y) offsets of the 8-neighborhood, y positive means up (DDNet "Pos" convention)
+NEIGHBOR_OFFSETS = [
+    (-1, 1), (0, 1), (1, 1),
+    (-1, 0), (1, 0),
+    (-1, -1), (0, -1), (1, -1),
+]
+NEIGHBOR_INDEX_BY_OFFSET = {offset: index for index, offset in enumerate(NEIGHBOR_OFFSETS)}
+
 
 class TileConnection:
     def __init__(self, neighbors: list):
@@ -114,11 +122,34 @@ class TileConnection:
         neighbors = self._neighbors
         return TileConnection([n % 2 for n in neighbors])
 
+    def getInverseNeighborhood(self, button_id: int, default: int = 2) -> "TileConnection":
+        """
+        Builds the TileConnection a neighbor button sees, given this (center) connection.
+
+        The neighbor at ``button_id`` observes the 8-neighborhood around itself. Each slot is
+        filled with the relationship this center tile stores for the tile sitting there, and the
+        center itself is looked up at the slot facing button_id (its own relation, mirrored).
+        slots that point outside the center's 3x3 grid are set to ``default``.
+        """
+        if button_id < 0 or button_id >= EIGHT_NEIGHBORS:
+            raise ValueError(f"Invalid neighbor ID {button_id}")
+        if default < 0 or default > 2:
+            raise ValueError(f"Invalid default {default}")
+        ret = [default] * EIGHT_NEIGHBORS
+        bx, by = NEIGHBOR_OFFSETS[button_id]
+        for local_index, (lx, ly) in enumerate(NEIGHBOR_OFFSETS):
+            gx, gy = bx + lx, by + ly
+            if gx == 0 and gy == 0:
+                ret[local_index] = self._neighbors[button_id]
+            elif -1 <= gx <= 1 and -1 <= gy <= 1:
+                ret[local_index] = self._neighbors[NEIGHBOR_INDEX_BY_OFFSET[(gx, gy)]]
+        return TileConnection(ret)
+
     def setNeighbor(self, neighbor_id, state):
         if state < 0 or state > 2:
-            return ValueError(f"Invalid state {state}")
-        if neighbor_id < 0 or neighbor_id > EIGHT_NEIGHBORS:
-            return ValueError(f"Invalid neighbor ID {neighbor_id}")
+            raise ValueError(f"Invalid state {state}")
+        if neighbor_id < 0 or neighbor_id >= EIGHT_NEIGHBORS:
+            raise ValueError(f"Invalid neighbor ID {neighbor_id}")
         self._neighbors[neighbor_id] = state
 
 

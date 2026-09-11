@@ -103,7 +103,7 @@ class TileSettingsDialog(QDialog):
         neighbor_buttons = self._getNeighborButtons(button_id)
         for i in range(EIGHT_NEIGHBORS):
             if neighbor_buttons[i] is not None:
-                self._updateTile(i)
+                self._updateTile(neighbor_buttons[i])
 
     def onModificationChange(self, modification: int, value: bool):
         match modification:
@@ -126,22 +126,15 @@ class TileSettingsDialog(QDialog):
         self._tile_data.con.setNeighbor(button_id, state)
 
     def _updateTile(self, button_id: int):
-        neighbors = [1] * EIGHT_NEIGHBORS  # all empty (for now) TODO change view with button
-        neighbor_buttons = self._getNeighborButtons(button_id)
-        for i in range(EIGHT_NEIGHBORS):
-            if neighbor_buttons[i] is not None:
-                neighbors[i] = self._tile_data.con.getNeighbors()[neighbor_buttons[i]]
-        con = TileConnection(neighbors)
-
-        tile_connection = con.getEmpty()
+        tile_connection = self._tile_data.con.getInverseNeighborhood(button_id, default=2)
         tile_id_list = TileHandler.instance().findTiles(tile_connection)
         if len(tile_id_list):
             # yay, I found a tile that connects in this location
             # use a random one, because this shouldn't matter
             rand_tile = random.randint(0, len(tile_id_list) - 1)
-            tile_id, _ = tile_id_list[rand_tile]
+            tile_id, tile_status = tile_id_list[rand_tile]
             tile = TileHandler.instance().getTile(tile_id)
-            self.buttons[button_id].setTile(tile, False)
+            self.buttons[button_id].setTile(tile, False, tile_status)
         else:  # No tile? reset
             self.buttons[button_id].setTile(None, False)
 

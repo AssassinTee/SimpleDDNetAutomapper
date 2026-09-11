@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from PyQt6.QtCore import QPoint, Qt
-from PyQt6.QtGui import QPainter, QPolygon, QRegion, QPixmap, QColor, QPen
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPainter, QPixmap, QColor, QPen, QTransform
 from PyQt6.QtWidgets import QAbstractButton
 
 from src.images_helper import ImageHelper
 from src.backend.tile_handler import TileHandler
+from src.backend.tile_status import TileStatus
 from src.signals.signal_emitter import ConfigurationClickedEmitter
 
 if TYPE_CHECKING:
@@ -26,6 +27,7 @@ class TileConnectionButton(QAbstractButton):
         self._state = 2  # Any
         self._num_states = 3
         self._tile = None
+        self._tile_status = None
         self._main = False
         self.setMinimumSize(128, 128)
         self.setMaximumSize(128, 128)
@@ -47,18 +49,35 @@ class TileConnectionButton(QAbstractButton):
         if self._state == 2:
             return
         size = self.size()
-        # clip region for ANY in order to show state between empty and full
-        # if not self._main and self._state == 2:
-        #    polygon = QPolygon()
-        #    polygon << QPoint(0, 0) << QPoint(size.width(), size.height()) << QPoint(0, size.height())
-        #    reg = QRegion(polygon)
-        #    qp.setClipRegion(reg)
 
         # draw tile
         pm = self._findPixmap()
         if pm:
-            qp.drawPixmap(0, 0, size.width(), size.height(), pm)
-        # qp.setClipping(False)
+            transform = QTransform()
+
+            if size.width() != pm.width() or size.height() != pm.height():
+                factor_width = size.width() / pm.width()
+                factor_height = size.height() / pm.height()
+                transform.scale(factor_width, factor_height)
+
+            if self._tile_status:
+                transform.translate(pm.width() // 2, pm.height() // 2)
+
+                # rotate first, because otherwise you might rotate your flip breaking this in the process
+                if self._tile_status.rot:
+                    transform.rotate(90)
+
+                if self._tile_status.y_flip:
+                    transform = transform.scale(1, -1)
+
+                if self._tile_status.x_flip:
+                    transform = transform.scale(-1, 1)
+
+                transform.translate(-pm.width() // 2, -pm.height() // 2)
+
+            qp.setTransform(transform)
+            qp.drawPixmap(0, 0, pm)
+            qp.resetTransform()
 
     # will be overwritten
     def _paintOutline(self, qp: QPainter):
@@ -113,15 +132,20 @@ class TileConnectionButton(QAbstractButton):
         self.update()
         super().leaveEvent(e)
 
-    def setTile(self, tile: Optional["Tile"], update_neighbors=True):
-        if self._tile and tile and \
-                (self._tile.getID() == tile.getID() or self._tile.tile_data == tile.tile_data):
-            return
+    def setTile(self, tile: Optional["Tile"], update_neighbors=True, tile_status: Optional[TileStatus] = None):
+        if self._tile and tile:
+            same_id = self._tile.getID() == tile.getID()
+            same_status = self._tile_status is not None and tile_status is not None \
+                and self._tile_status == tile_status
+            if same_id and same_status:
+                return
 
         if tile is None:
             self._tile = tile
+            self._tile_status = None
         else:
             self._tile = tile.__copy__()
+            self._tile_status = tile_status.__copy__() if tile_status else None
 
         if update_neighbors:
             self._update_neighborhood()
