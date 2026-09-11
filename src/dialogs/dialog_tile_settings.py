@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
-from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox
+from PyQt6.QtWidgets import QDialog, QGridLayout, QDialogButtonBox, QLabel, QSpinBox
 
 from src.buttons.button_tile_connection import TileConnectionButton
 from src.buttons.button_tile_connection_center import TileConnectionCenterButton
@@ -50,6 +50,15 @@ class TileSettingsDialog(QDialog):
         # self.center.setMain()
         self.tile = tile
 
+        self.chance_spinbox = QSpinBox()
+        self.chance_spinbox.setRange(1, 100)
+        self.chance_spinbox.setSuffix(" %")
+        self.chance_spinbox.setValue(100)
+        self.chance_spinbox.setToolTip("Tiles declaring the same neighborhood split it between them,\n"
+                                       "anything left over falls through to a less specific rule.")
+        self.layout.addWidget(QLabel("Chance:"), 4, 1, 1, 2)
+        self.layout.addWidget(self.chance_spinbox, 4, 3, 1, 2)
+
         q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QDialogButtonBox(q_btn)
@@ -63,10 +72,13 @@ class TileSettingsDialog(QDialog):
         self._tile_data = TileData(TileConnection([2] * 8), TileStatus(), TileMods(False, False, False))
 
     def getTileData(self):
-        return self._tile_data.__copy__()
+        data = self._tile_data.__copy__()
+        data.chance = float(self.chance_spinbox.value())
+        return data
 
     def setTileData(self, data: TileData):
         self._tile_data = data.__copy__()
+        self.chance_spinbox.setValue(int(self._tile_data.chance))
 
         # update button states
         for i, button_state in enumerate(self._tile_data.con.getNeighbors()):

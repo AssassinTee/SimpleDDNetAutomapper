@@ -5,10 +5,12 @@ from PyQt6.QtGui import QPixmap, QAction
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QScrollArea, QMessageBox
 
 from src.dialogs.dialog_config_settings import ConfigSettingsDialog
+from src.dockwidgets.dockwidget_group_editor import GroupEditorDockwidget
 from src.dockwidgets.dockwidget_mapper_generator import MapperGeneratorDockwidget
 from src.widgets.widget_image_selector import ImageSelectorWidget
 from src.config.app_state import AppState
 from src.signals.signal_emitter import ApplicationStatusEnum
+from src.backend.group_handler import GroupHandler
 from src.backend.tile_handler import TileHandler
 import src.logger
 import logging
@@ -31,6 +33,12 @@ class MainWindow(QMainWindow):
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.mapper_generator)
         self.mapper_generator.setDisabled(True)  # disable until image is loaded
+
+        self.group_editor = GroupEditorDockwidget()
+        self.group_editor.setAllowedAreas(
+            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.group_editor)
+        self.group_editor.setDisabled(True)  # disable until image is loaded
 
         # Create menu bar
         menubar = self.menuBar()
@@ -72,9 +80,16 @@ class MainWindow(QMainWindow):
         if status_type == ApplicationStatusEnum.IMAGE_LOADED:
             self.mapper_generator.setEnabled(True)
             self.mapper_generator.widget().rulesLoaded()
-            # TODO set status dockwidget "Successfully loaded image"
+            self.group_editor.setEnabled(True)
         elif status_type == ApplicationStatusEnum.RESET_APP:
             self.mapper_generator.widget().reset()
             self.central_widget.reset()
             TileHandler.instance().reset()
-        pass
+            GroupHandler.instance().reset()
+            self.group_editor.widget().reset()
+            self.group_editor.setDisabled(True)
+        elif status_type == ApplicationStatusEnum.GROUPS_CHANGED:
+            self.group_editor.widget().refresh()
+            self.central_widget.tileClicker().refreshGroups()
+        elif status_type in (ApplicationStatusEnum.WARNING, ApplicationStatusEnum.INFO):
+            self.statusBar().showMessage(message, 8000)

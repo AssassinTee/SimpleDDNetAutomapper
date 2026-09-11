@@ -28,6 +28,9 @@ class ImageSelectorWidget(QWidget):
         layout.addWidget(self.image_label)
         self.setLayout(layout)
 
+    def tileClicker(self) -> TileClicker:
+        return self.image_label
+
     def select_image(self):
         file_dialog = QFileDialog(self)
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp)")

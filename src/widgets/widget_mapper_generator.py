@@ -3,10 +3,13 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit, QComboBox
+from PyQt6.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QRadioButton, QLabel, QPushButton, QLineEdit,
+                             QComboBox, QFileDialog)
 from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
 from PyQt6.QtCore import QRegularExpression
 
+from src.backend.group_handler import GroupHandler
+from src.backend.rule_manager import RuleManager
 from src.config.app_state import AppState
 from src.signals.signal_emitter import ApplicationStatusEnum
 from src.dialogs.dialog_check_map import CheckMapDialog
@@ -68,6 +71,10 @@ class MapperGeneratorWidget(QWidget):
         self.layout.addWidget(self.ddnet_push_button)
         self.refreshClientButton()
 
+        # export rpp source, needs neither a ddnet install nor a rule name
+        self.export_rpp_button = QPushButton("Export rpp source (.r)")
+        self.layout.addWidget(self.export_rpp_button)
+
         # spacer
         self.layout.addStretch(1)
 
@@ -86,6 +93,7 @@ class MapperGeneratorWidget(QWidget):
         self.check_map_button_easy.clicked.connect(self.checkMappingRulesEasy)
         self.check_map_button_medium.clicked.connect(self.checkMappingRulesMedium)
         self.check_map_button_advanced.clicked.connect(self.checkMappingRulesAdvanced)
+        self.export_rpp_button.clicked.connect(self.exportRppSource)
         self.new_mapper_line_edit.textChanged.connect(self.mappingRuleNameChanged)
 
         # some configuration
@@ -101,11 +109,13 @@ class MapperGeneratorWidget(QWidget):
     def refreshClientButton(self):
         self.ddnet_push_button.setEnabled(bool(ConfigManager.config()["client_path"]))
 
-    def startRuleGeneration(self):
+    def _ruleName(self) -> str:
         if self.radio_buttons[0].isChecked():
-            rule_name = self.new_mapper_line_edit.text()
-        else:
-            rule_name = self.existing_mapper_combobox.currentText()
+            return self.new_mapper_line_edit.text()
+        return self.existing_mapper_combobox.currentText()
+
+    def startRuleGeneration(self):
+        rule_name = self._ruleName()
 
         if not AppState.imagePath() or not rule_name or not len(rule_name):
             AppState.setStatus(ApplicationStatusEnum.WARNING, "You can't generate without a rule name")
@@ -114,12 +124,23 @@ class MapperGeneratorWidget(QWidget):
             AppState.setStatus(ApplicationStatusEnum.WARNING,
                                "No ddnet data directory configured, cannot save rule. Set it in Settings.")
             return
-        cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?", cancel=True, map_file="data/debroijn_torus.txt")
+        cmd = CheckMapDialog(self, title=f"Do you want to save your mapping rule '{rule_name}'?",
+                             cancel=True, map_file="data/debroijn_torus.txt")
         ret = cmd.exec()
         if ret:
             loaded_image_path = AppState.imagePath()
             filename = f"{loaded_image_path.stem}.rules"
             AppState.ruleManager().saveRule(filename, rule_name)
+            AppState.ruleManager().saveRppSource(filename, rule_name)
+            self._warnAboutDroppedGroups()
+
+    def _warnAboutDroppedGroups(self):
+        # .rules cannot express multi-tile objects, only the rpp source can
+        count = len(GroupHandler.instance().getGroups())
+        if count:
+            AppState.setStatus(ApplicationStatusEnum.WARNING,
+                               f"{count} tile group(s) are not part of the .rules file, "
+                               f"compile the exported .r instead.")
 
     def checkMappingRulesAdvanced(self):
         cmd = CheckMapDialog(self, title="Check Full Mapping Rules", cancel=False, map_file="data/debroijn_torus.txt")
@@ -132,6 +153,21 @@ class MapperGeneratorWidget(QWidget):
     def checkMappingRulesEasy(self):
         cmd = CheckMapDialog(self, title="Check Minimal Mapping Rules", cancel=False, map_file="data/minimal.txt")
         cmd.exec()
+
+    @BroadErrorHandler(logger)
+    def exportRppSource(self):
+        image_path = AppState.imagePath()
+        if not image_path:
+            AppState.setStatus(ApplicationStatusEnum.WARNING, "Load a tileset image first.")
+            return
+
+        stem = image_path.stem
+        file_path, _ = QFileDialog.getSaveFileName(self, "Export rpp source", f"{stem}.r", "rpp source (*.r)")
+        if not file_path:
+            return
+
+        Path(file_path).write_text(RuleManager.rppSource(self._ruleName() or stem, stem))
+        logger.debug(f"Exported rpp source to {file_path}")
 
     def mappingRuleNameChanged(self):
         self._updateGenerateButton()
@@ -171,18 +207,14 @@ class MapperGeneratorWidget(QWidget):
             return
 
         # get rule name and save rules to automap dir
-        if self.radio_buttons[0].isChecked():
-            rule_name = self.new_mapper_line_edit.text()
-        else:
-            rule_name = self.existing_mapper_combobox.currentText()
-        if not rule_name:
-            rule_name = "ddnet_check"
+        rule_name = self._ruleName() or "ddnet_check"
 
         data_path = ConfigManager.config()["data_path"]
         if data_path:
             loaded_image_path = AppState.imagePath()
             filename = f"{loaded_image_path.stem}.rules"
             AppState.ruleManager().saveRule(filename, rule_name)
+            AppState.ruleManager().saveRppSource(filename, rule_name)
 
         # generate map
         date_str = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import List, Dict, Optional
 
+from src.backend import rpp_writer
+from src.backend.group_handler import GroupHandler
+from src.backend.rules_writer import createRuleLines
 from src.backend.tile_handler import TileHandler
-from src.backend.tile_status import TileStatus
 from src.config.config_manager import ConfigManager
-from src.widgets.widget_base_tile import BaseTile
 from src.logger import BroadErrorHandler
 import logging
 logger = logging.getLogger(__name__)
@@ -28,13 +29,7 @@ class RuleManager:
                 self._header = []
                 self._loadedRules = True
                 return
-            data_path = Path(data_path)
-
-            automapper_path = data_path.joinpath(Path("editor/automap"))
-            if not automapper_path.exists():
-                automapper_path.mkdir()
-
-            full_file_path = automapper_path.joinpath(Path(filename))
+            full_file_path = RuleManager._automapPath().joinpath(Path(filename))
 
             # load file if it exists
             if full_file_path.is_file():
@@ -82,40 +77,29 @@ class RuleManager:
 
     @staticmethod
     def _createRulesFromTileHandler():
-        rule_pos_map = {
-            0: "1 1",
-            1: "0 1",
-            2: "-1 1",
-            3: "1 0",
-            4: "-1 0",
-            5: "1 -1",
-            6: "0 -1",
-            7: "-1 -1",
-        }
-
-        rule_list = []
-        for i in range(2 ** 8):
-            base_tiles: List[BaseTile] = TileHandler.instance().findTilesByNeighborhood(i)
-            if len(base_tiles) > 0:
-                # use first one, TODO: randomize?
-                tile_id, tile_status = base_tiles[0]
-                index_rule = RuleManager._createIndexRule(tile_id, tile_status)
-                placing_rules = []
-                for j in range(8):
-                    full_neighbor = ((i >> j) & 1) > 0
-                    str_full = "FULL" if full_neighbor else "EMPTY"
-                    rule = f"Pos {rule_pos_map[j]} {str_full}"
-                    placing_rules.append(rule)
-                rule_list.extend([index_rule, *placing_rules])
-        return rule_list
+        return createRuleLines(TileHandler.instance().neighborhood_map)
 
     @staticmethod
-    def _createIndexRule(tile_id: int, tile_status: TileStatus):
-        str_index = f"Index {tile_id}"
-        str_x_flip = " XFLIP" if tile_status.x_flip else ""
-        str_y_flip = " YFLIP" if tile_status.y_flip else ""
-        str_rotate = " ROTATE" if tile_status.rot else ""
-        return f"{str_index}{str_x_flip}{str_y_flip}{str_rotate}"
+    def _automapPath() -> Path:
+        data_path = ConfigManager.config()["data_path"]
+        if not data_path:
+            raise ValueError("No editor directory path known, cannot save rules")
+        automap_path = Path(data_path).joinpath(Path("editor/automap"))
+        automap_path.mkdir(parents=True, exist_ok=True)
+        return automap_path
+
+    @staticmethod
+    def rppSource(rule_name: str, image_stem: str) -> str:
+        return rpp_writer.dumps(TileHandler.instance().getAllTileData(), rule_name, image_stem,
+                                GroupHandler.instance().getGroups())
+
+    @BroadErrorHandler(logger)
+    def saveRppSource(self, filename, rule_name):
+        # dropped next to the .rules file, compiling it is still manual and needs rpp's base.r beside it
+        stem = RuleManager._getFileBase(filename)
+        full_path = RuleManager._automapPath().joinpath(Path(f"{stem}.r"))
+        full_path.write_text(RuleManager.rppSource(rule_name, stem))
+        logger.debug(f"Wrote rpp source to {full_path}")
 
     def _writeRuleFile(self, filename_base: str):
         if len(filename_base) == 0 or filename_base[0] == '/' or filename_base[0] == '\\':
@@ -123,14 +107,7 @@ class RuleManager:
 
         # handle file location
         filename = f"{filename_base}.rules"
-        data_path = ConfigManager.config()["data_path"]
-        if not data_path:
-            raise ValueError("No editor directory path known, cannot save rules")
-        else:
-            automap_path = Path(data_path).joinpath(Path("editor/automap"))
-            if not automap_path.exists():
-                automap_path.mkdir()
-            full_path = automap_path.joinpath(filename)
+        full_path = RuleManager._automapPath().joinpath(Path(filename))
 
         # write file
         with open(str(full_path), 'w') as f:

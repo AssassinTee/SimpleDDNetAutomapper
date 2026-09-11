@@ -7,6 +7,7 @@ from src.dialogs.dialog_tile_settings import TileSettingsDialog
 from src.backend.tile_connection import TileConnection
 from src.backend.tile_data import TileData
 from src.backend.tile_handler import TileHandler
+from src.config.app_state import AppState
 from typing import Optional, Any
 
 from src.widgets.widget_base_tile import BaseTile
@@ -24,6 +25,9 @@ class Tile(BaseTile):
         self.lock = True  # lock as long as empty
         self.tile_checked: int = 0  # 0 = unchecked, 1 = configured, 2 = removed
         self.image: Optional[QImage] = None
+        self.group_color: Optional[QColor] = None
+        self.group_label: str = ""  # only the top left tile of a group is labelled
+        self.group_chance: str = ""
 
     def paintEvent(self,
                    e: Any,
@@ -35,7 +39,40 @@ class Tile(BaseTile):
         if self.pixmap() or self.tile_id == 0:
             qp = QPainter(self)
             self.paintPixmapExists(qp)
+            self.paintGroup(qp)
             qp.end()
+
+    def setGroupOverlay(self, color: Optional[QColor], label: str = "", chance: str = "",
+                        tooltip: str = ""):
+        if color == self.group_color and label == self.group_label and chance == self.group_chance:
+            return
+        self.group_color = color
+        self.group_label = label
+        self.group_chance = chance
+        self.setToolTip(tooltip)
+        self.update()
+
+    def paintGroup(self, qp: QPainter):
+        if not self.group_color:
+            return
+        qp.fillRect(0, 0, self.width() - 1, self.height() - 1, self.group_color)
+        qp.setPen(QPen(QColor(self.group_color.rgb()), 2))  # same color, but opaque
+        qp.drawRect(0, 0, self.width() - 1, self.height() - 1)
+
+        if self.group_label and self._drawOverlayText(qp, self.group_label, 1) and self.group_chance:
+            self._drawOverlayText(qp, self.group_chance, 13)
+
+    def _drawOverlayText(self, qp: QPainter, text: str, y: int) -> bool:
+        # tiles get as small as the tileset allows, so only draw what still says something
+        qp.setPen(QPen(QColor(255, 255, 255, 255), 1))
+        available = self.width() - 4
+        if y + 12 > self.height():
+            return False
+        elided = qp.fontMetrics().elidedText(text, Qt.TextElideMode.ElideRight, available)
+        if qp.fontMetrics().horizontalAdvance(elided[:2]) > available:
+            return False
+        qp.drawText(2, y, available, 12, Qt.AlignmentFlag.AlignLeft, elided)
+        return True
 
     def paintPixmapExists(self, qp: QPainter):
         if self.lock:
@@ -45,6 +82,9 @@ class Tile(BaseTile):
         else:
             if self.hovered or self.selected:
                 qp.fillRect(0, 0, self.width() - 1, self.height() - 1, QColor(255, 255, 255, 100))
+
+            if self.tile_data and self.tile_data.chance < 100:
+                self._drawOverlayText(qp, f"{self.tile_data.chance:g}%", 1)
 
             if self.tile_data:
                 if self.tile_checked == 0:
@@ -64,11 +104,30 @@ class Tile(BaseTile):
         qp.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def mousePressEvent(self, event):
+        if AppState.groupMode():
+            clicker = self.parentWidget()
+            if event.button() == Qt.MouseButton.RightButton:
+                clicker.removeGroupAt(self.tile_id)
+            else:
+                clicker.groupDragStart(self.tile_id)
+            return
+
         if event.button() == Qt.MouseButton.RightButton:
             self.rightMouseButtonClicked()
         else:
             self.leftMouseButtonClicked()
         super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if AppState.groupMode():
+            self.parentWidget().groupDragTo(event.globalPosition().toPoint())
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if AppState.groupMode():
+            self.parentWidget().groupDragEnd()
+            return
+        super().mouseReleaseEvent(event)
 
     def leftMouseButtonClicked(self):
         # one does not simply configure locked tiles

@@ -65,3 +65,20 @@ in the data directory
 
 You can press `Generate` without being finished to check on your work, just press `Cancel` and continue 
 editing your tiles
+
+## How rules are ordered
+
+- **Tiles**: For rule conflicts the most specific rule wins (e.g. a very specific rule will win over one using many any) 
+- **Groups**: Groups higher in the list are applied first
+- Groups are applied before Tiles
+
+## TODO
+
+- Migrate the remaining hardcoded neighbor tables to `src/backend/neighbor.py`
+- Replace the 6 hand-rolled `instance()` singletons with module-level instances
+- Fix window scaling: Linux stretches the tileset, macOS grows past the screen, ...
+- Add save/load UI for `blueprint.py`
+- Drop the `.rules` backend and keep only `.r`, which needs rpp shipped with the app
+- Fix the center checkboxes, they never load their state back from the tile
+- Teach `StorageFinder` where ddnet lives on macOS, maybe reuse patiga's tooling
+- Improve packaging, ship rpp with the app and stop depending on the working directory

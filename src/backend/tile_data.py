@@ -11,10 +11,12 @@ class TileData:
     This class holds all tile data, which is not Qt related
     """
 
-    def __init__(self, con: TileConnection, status: TileStatus, mods: TileMods):
+    def __init__(self, con: TileConnection, status: TileStatus, mods: TileMods, chance: float = 100.0):
         self.con = con
         self.status = status
         self.mods = mods
+        # share of a neighborhood this tile claims when several tiles declare the same one
+        self.chance = chance
 
     def getAllPossibleModifications(self) -> List[TileMapState]:
         """
@@ -86,11 +88,12 @@ class TileData:
         td = self.con.__copy__()
         ts = self.status.__copy__()
         tm = self.mods.__copy__()
-        return TileData(td, ts, tm)
+        return TileData(td, ts, tm, self.chance)
 
     def __eq__(self, other):
         if isinstance(other, TileData):
             return self.con == other.con and \
                 self.mods == other.mods and \
-                self.status == other.status
+                self.status == other.status and \
+                self.chance == other.chance
         raise NotImplementedError

@@ -20,6 +20,7 @@ class AppState:
     def _init(self):
         self.rule_manager: RuleManager = RuleManager()
         self.main_image_path: Optional[Path] = None
+        self.group_mode = False
         self.signal_emitter = ApplicationStatusEmitter()
 
     @classmethod
@@ -46,10 +47,25 @@ class AppState:
             f"image loaded: {image_path}")
 
     @classmethod
+    def groupMode(cls) -> bool:
+        # while on, dragging across the tileset defines a group instead of configuring a tile
+        return cls.instance().group_mode
+
+    @classmethod
+    def setGroupMode(cls, enabled: bool):
+        cls.instance().group_mode = enabled
+
+    @classmethod
+    def groupsChanged(cls):
+        cls.instance().signal_emitter.application_status_signal.emit(
+            ApplicationStatusEnum.GROUPS_CHANGED, "")
+
+    @classmethod
     def reset(cls):
         # do not call _init here, don't overwrite the signal emitter, reset manually
         cls.instance().rule_manager: RuleManager = RuleManager()
         cls.instance().main_image_path: Optional[Path] = None
+        cls.instance().group_mode = False
         cls.instance().signal_emitter.application_status_signal.emit(
             ApplicationStatusEnum.RESET_APP,
             "Reset rules and images")

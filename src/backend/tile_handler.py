@@ -8,6 +8,7 @@ from src.backend.tile_status import TileStatus
 from src.widgets.widget_base_tile import BaseTile
 
 if TYPE_CHECKING:
+    from src.backend.tile_data import TileData
     from src.widgets.widget_tile import Tile
 
 NeighborhoodEntry = Tuple[int, TileStatus]
@@ -110,6 +111,9 @@ class TileHandler:
         if tile_id not in self.tile_id_map:
             raise ValueError(f"Unknown tile ID {tile_id}")
         return self.tile_id_map[tile_id].__copy__()
+
+    def getAllTileData(self) -> Dict[int, "TileData"]:
+        return {tile_id: tile.tile_data for tile_id, tile in self.tile_id_map.items()}
 
     def findTilesByNeighborhood(self, neighborhood: int) -> List[NeighborhoodEntry]:
         if neighborhood < 0 or neighborhood >= 2**8:
