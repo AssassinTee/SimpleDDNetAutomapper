@@ -58,6 +58,8 @@ class MapperGeneratorWidget(QWidget):
         # check map
         self.check_map_button_easy = QPushButton("Check minimal mapping rules")
         self.layout.addWidget(self.check_map_button_easy)
+        self.check_map_button_medium = QPushButton("Check medium mapping rules")
+        self.layout.addWidget(self.check_map_button_medium)
         self.check_map_button_advanced = QPushButton("Check full mapping rules")
         self.layout.addWidget(self.check_map_button_advanced)
 
@@ -82,6 +84,7 @@ class MapperGeneratorWidget(QWidget):
         self.generate_button.clicked.connect(self.startRuleGeneration)
         self.ddnet_push_button.clicked.connect(self.startDDNetCheck)
         self.check_map_button_easy.clicked.connect(self.checkMappingRulesEasy)
+        self.check_map_button_medium.clicked.connect(self.checkMappingRulesMedium)
         self.check_map_button_advanced.clicked.connect(self.checkMappingRulesAdvanced)
         self.new_mapper_line_edit.textChanged.connect(self.mappingRuleNameChanged)
 
@@ -121,7 +124,11 @@ class MapperGeneratorWidget(QWidget):
     def checkMappingRulesAdvanced(self):
         cmd = CheckMapDialog(self, title="Check Full Mapping Rules", cancel=False, map_file="data/debroijn_torus.txt")
         cmd.exec()
-    
+
+    def checkMappingRulesMedium(self):
+        cmd = CheckMapDialog(self, title="Check Medium Mapping Rules", cancel=False, map_file="data/medium.txt")
+        cmd.exec()
+
     def checkMappingRulesEasy(self):
         cmd = CheckMapDialog(self, title="Check Minimal Mapping Rules", cancel=False, map_file="data/minimal.txt")
         cmd.exec()
