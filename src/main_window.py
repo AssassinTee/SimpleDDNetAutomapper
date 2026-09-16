@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QAction
@@ -10,8 +11,11 @@ from src.dockwidgets.dockwidget_mapper_generator import MapperGeneratorDockwidge
 from src.widgets.widget_image_selector import ImageSelectorWidget
 from src.config.app_state import AppState
 from src.signals.signal_emitter import ApplicationStatusEnum
+from src.backend import blueprint
+from src.backend.blueprint import Blueprint
 from src.backend.group_handler import GroupHandler
 from src.backend.tile_handler import TileHandler
+from src.logger import BroadErrorHandler
 import src.logger
 import logging
 logger = logging.getLogger(__name__)
@@ -57,6 +61,16 @@ class MainWindow(QMainWindow):
         settings_action.triggered.connect(self.openSettings)
         file_menu.addAction(settings_action)
 
+        file_menu.addSeparator()
+
+        load_blueprint_action = QAction('&Load Blueprint', self)
+        load_blueprint_action.triggered.connect(self.loadBlueprint)
+        file_menu.addAction(load_blueprint_action)
+
+        save_blueprint_action = QAction('&Save Blueprint', self)
+        save_blueprint_action.triggered.connect(self.saveBlueprint)
+        file_menu.addAction(save_blueprint_action)
+
         # Create Help menu
         help_menu = menubar.addMenu('&Help')
 
@@ -71,6 +85,52 @@ class MainWindow(QMainWindow):
     def openSettings(self):
         ConfigSettingsDialog(self).exec()
         self.mapper_generator.widget().refreshClientButton()
+
+    @BroadErrorHandler(logger)
+    def saveBlueprint(self, checked=False) -> bool:
+        image_path = AppState.imagePath()
+        if not image_path:
+            AppState.setStatus(ApplicationStatusEnum.WARNING, "Load a tileset image first.")
+            return False
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save blueprint", f"{image_path.stem}.blueprint.json", "Blueprint (*.json)")
+        if not file_path:
+            return False
+
+        bp = Blueprint(TileHandler.instance().getAllTileData(), image_path.stem, GroupHandler.instance().getGroups())
+        Path(file_path).write_text(blueprint.dumps(bp))
+        AppState.setStatus(ApplicationStatusEnum.INFO, f"Blueprint saved to {file_path}")
+        return True
+
+    @BroadErrorHandler(logger)
+    def loadBlueprint(self, checked=False):
+        image_path = AppState.imagePath()
+        if not image_path:
+            AppState.setStatus(ApplicationStatusEnum.WARNING, "Load a tileset image first.")
+            return
+
+        file_path, _ = QFileDialog.getOpenFileName(self, "Load blueprint", "", "Blueprint (*.json)")
+        if not file_path:
+            return
+
+        bp = blueprint.loads(Path(file_path).read_text())
+        if bp.image and bp.image != image_path.stem:
+            AppState.setStatus(ApplicationStatusEnum.WARNING,
+                               f"Blueprint was saved for '{bp.image}', tiles may not match.")
+
+        tiles = self.central_widget.tileClicker().tiles
+        for tile_id, tile_data in bp.tiles.items():
+            tile = tiles[tile_id]
+            tile.tile_data = tile_data
+            tile.tile_checked = 1
+            tile.lock = False
+            TileHandler.instance().updateTileStorage(tile)
+            tile.update()
+
+        GroupHandler.instance().setGroups(bp.groups)
+        AppState.groupsChanged()
+        AppState.setStatus(ApplicationStatusEnum.INFO, f"Blueprint loaded from {file_path}")
 
     def showAbout(self):
         QMessageBox.about(self, 'About', 'This is a PyQt6 menu example.')

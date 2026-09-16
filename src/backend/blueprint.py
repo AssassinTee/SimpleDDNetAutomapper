@@ -8,7 +8,7 @@ from src.backend.tile_group import GroupMode, TileGroup
 from src.backend.tile_modificators import TileMods
 from src.backend.tile_status import TileStatus
 
-SERIALIZATION_VERSION = 3
+SERIALIZATION_VERSION = 1
 
 
 class Blueprint:
