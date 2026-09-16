@@ -39,11 +39,15 @@ class TileSettingsDialog(QDialog):
             if i == 4:
                 widget = TileConnectionCenterButton(tile, i, self)
                 self.center = widget
-                widget.signal_emitter.modification_signal.connect(self.onModificationChange)
+                widget.signal_emitter.modification_signal.connect(
+                    self.onModificationChange
+                )
             else:
                 widget = TileConnectionButton(len(self.buttons), self)
                 self.buttons.append(widget)
-                widget.signal_emitter.neighbor_signal.connect(self.onConnectionButtonClick)
+                widget.signal_emitter.neighbor_signal.connect(
+                    self.onConnectionButtonClick
+                )
             self.layout.addWidget(widget, i // 3 + 1, i % 3 + 1, 1, 1)
 
         # self.center.setTile(tile)
@@ -54,12 +58,18 @@ class TileSettingsDialog(QDialog):
         self.chance_spinbox.setRange(1, 100)
         self.chance_spinbox.setSuffix(" %")
         self.chance_spinbox.setValue(100)
-        self.chance_spinbox.setToolTip("Tiles declaring the same neighborhood split it between them,\n"
-                                       "anything left over falls through to a less specific rule.")
+        self.chance_spinbox.setToolTip(
+            "Tiles declaring the same neighborhood split it between them,\n"
+            "anything left over falls through to a less specific rule."
+        )
+        # so Qt focus doesn't screw with custom tile focus
+        self.chance_spinbox.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.layout.addWidget(QLabel("Chance:"), 4, 1, 1, 2)
         self.layout.addWidget(self.chance_spinbox, 4, 3, 1, 2)
 
-        q_btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        q_btn = (
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
 
         self.buttonBox = QDialogButtonBox(q_btn)
         self.buttonBox.accepted.connect(self.accept)
@@ -69,7 +79,9 @@ class TileSettingsDialog(QDialog):
 
         self.setModal(True)
         # TODO calculate smarter values with the tile itself
-        self._tile_data = TileData(TileConnection([2] * 8), TileStatus(), TileMods(False, False, False))
+        self._tile_data = TileData(
+            TileConnection([2] * 8), TileStatus(), TileMods(False, False, False)
+        )
 
     def getTileData(self):
         data = self._tile_data.__copy__()
@@ -138,7 +150,9 @@ class TileSettingsDialog(QDialog):
         self._tile_data.con.setNeighbor(button_id, state)
 
     def _updateTile(self, button_id: int):
-        tile_connection = self._tile_data.con.getInverseNeighborhood(button_id, default=2)
+        tile_connection = self._tile_data.con.getInverseNeighborhood(
+            button_id, default=2
+        )
         tile_id_list = TileHandler.instance().findTiles(tile_connection)
         if len(tile_id_list):
             # yay, I found a tile that connects in this location
@@ -156,9 +170,9 @@ class TileSettingsDialog(QDialog):
         """
         returns the 8 neighborhood of a button with button_id.
         If there is no neigbor in the 8-neighbood, None is put in so the location is still known
-        
+
         Examples:
-        
+
         Eight neigborhood of button 0:
         # # #
         # 0 1
