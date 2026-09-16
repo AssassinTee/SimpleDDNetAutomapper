@@ -82,3 +82,4 @@ editing your tiles
 - Fix the center checkboxes, they never load their state back from the tile
 - Teach `StorageFinder` where ddnet lives on macOS, maybe reuse patiga's tooling
 - Improve packaging, ship rpp with the app and stop depending on the working directory
+- Fix `@BroadErrorHandler` breaking PyQt's arg-count introspection, requires `checked=False` on connected slots

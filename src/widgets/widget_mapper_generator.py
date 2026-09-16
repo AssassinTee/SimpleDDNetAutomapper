@@ -155,7 +155,7 @@ class MapperGeneratorWidget(QWidget):
         cmd.exec()
 
     @BroadErrorHandler(logger)
-    def exportRppSource(self):
+    def exportRppSource(self, checked=False):
         image_path = AppState.imagePath()
         if not image_path:
             AppState.setStatus(ApplicationStatusEnum.WARNING, "Load a tileset image first.")
