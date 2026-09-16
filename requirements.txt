@@ -4,5 +4,6 @@ pyqt6==6.7.0
 flake8==7.0.0
 pyinstaller
 pyyaml
+pydantic
 coverage
 twmap==0.6.6

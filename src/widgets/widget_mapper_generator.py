@@ -107,7 +107,7 @@ class MapperGeneratorWidget(QWidget):
         self.new_mapper_line_edit.setMaxLength(128)  # limit number of characters
 
     def refreshClientButton(self):
-        self.ddnet_push_button.setEnabled(bool(ConfigManager.config()["client_path"]))
+        self.ddnet_push_button.setEnabled(bool(ConfigManager.config().client_path))
 
     def _ruleName(self) -> str:
         if self.radio_buttons[0].isChecked():
@@ -120,7 +120,7 @@ class MapperGeneratorWidget(QWidget):
         if not AppState.imagePath() or not rule_name or not len(rule_name):
             AppState.setStatus(ApplicationStatusEnum.WARNING, "You can't generate without a rule name")
             return
-        if not ConfigManager.config()["data_path"]:
+        if not ConfigManager.config().data_path:
             AppState.setStatus(ApplicationStatusEnum.WARNING,
                                "No ddnet data directory configured, cannot save rule. Set it in Settings.")
             return
@@ -200,7 +200,7 @@ class MapperGeneratorWidget(QWidget):
             AppState.setStatus(ApplicationStatusEnum.WARNING, "Load a tileset image first.")
             return
 
-        client_path = ConfigManager.config()["client_path"]
+        client_path = ConfigManager.config().client_path
         if not client_path:
             self.ddnet_push_button.setDisabled(True)
             AppState.setStatus(ApplicationStatusEnum.WARNING, "No ddnet client configured. Set it in Settings.")
@@ -209,7 +209,7 @@ class MapperGeneratorWidget(QWidget):
         # get rule name and save rules to automap dir
         rule_name = self._ruleName() or "ddnet_check"
 
-        data_path = ConfigManager.config()["data_path"]
+        data_path = ConfigManager.config().data_path
         if data_path:
             loaded_image_path = AppState.imagePath()
             filename = f"{loaded_image_path.stem}.rules"

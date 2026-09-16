@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QGridLayout, QLabel, QFileDialog, QPushButton, QDialog, QDialogButtonBox
@@ -21,8 +20,8 @@ class ConfigSettingsDialog(QDialog):
 
         index = 0
         for index, (config, label, filemode) in enumerate(configs):
-            client_path = ConfigManager.config()[config]
-            config_button = QPushButton(client_path)
+            client_path = getattr(ConfigManager.config(), config)
+            config_button = QPushButton(str(client_path) if client_path else "")
             q_label = QLabel(label)
             self.layout.addWidget(q_label, index, 0)
             self.layout.addWidget(config_button, index, 1)
@@ -45,12 +44,12 @@ class ConfigSettingsDialog(QDialog):
         return handler
 
     def browseSetting(self, setting: str, text: str, config_button: QPushButton, filemode: QFileDialog.FileMode):
-        value = ConfigManager.config()[setting]
+        value = getattr(ConfigManager.config(), setting)
         if not value:
             directory = os.getcwd()
         else:
-            directory = Path(value).parent if Path(value).is_file() else (
-                value if Path(value).is_dir() else os.getcwd())
+            directory = value.parent if value.is_file() else (
+                value if value.is_dir() else os.getcwd())
 
         dialog = QFileDialog(self, caption=text)
         dialog.setFileMode(filemode)
